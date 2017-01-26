@@ -18,35 +18,9 @@
 #include "System/ContextHandler.h"
 #include "System/Motherboard.h"
 
-ContextHandler::ContextHandler(bool fullscreenWindow, float screenSizeMulitplier) throw(std::runtime_error)
+ContextHandler::ContextHandler(int width, int height, GLFWmonitor* monitor) throw(std::runtime_error)
 {
-	if (! glfwInit())
-		throw(std::runtime_error("Could initialize GLFW!"));
-	
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	
-	if (fullscreenWindow)
-	{
-		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-		const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
-		this->_context = glfwCreateWindow(vidmode->width,
-											vidmode->height,
-											"advanced tesselated machine",
-											monitor,
-											nullptr);
-	}
-	else
-	{
-		this->_context = glfwCreateWindow(motherboardScreenSizeX*screenSizeMulitplier,
-											motherboardScreenSizeY*screenSizeMulitplier,
-											"advanced tesselated machine",
-											nullptr,
-											nullptr);
-	}
+	this->_context = glfwCreateWindow(width, height, "advanced tesselated machine", monitor, nullptr);
 	
 	if (this->_context == NULL)
 		throw(std::runtime_error("Could create window!"));

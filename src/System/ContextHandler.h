@@ -20,10 +20,21 @@
 #include <stdexcept>
 #include <GLFW/glfw3.h>
 
+/*
+ * Class for handling a GLFW context.
+ * When an object of this class is created, it initializes GLFW
+ * and an context. At destruction, this context will be deleted.
+ */
 class ContextHandler : public Uncopyable
 {
 public:
-	ContextHandler(bool fullscreenWindow, float screenSizeMulitplier) throw(std::runtime_error);
+	/*
+	 * Creates a window with the given width, height and monitor
+	 */
+	ContextHandler(int width, int height, GLFWmonitor* monitor) throw(std::runtime_error);
+	/*
+	 * Destroys the window.
+	 */
 	~ContextHandler() override;
 	
 	GLFWwindow* getContext() const;

@@ -152,7 +152,27 @@ bool Motherboard::configure()
 	// gl context creation
 	glfwSetErrorCallback(&Motherboard::glfwErrorCallback);
 	
-	this->_contextHandler = std::make_shared<ContextHandler>(this->_fullscreenWindow, this->_screenSizeMulitplier);
+	if (! glfwInit())
+		return false;
+	
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	
+	if (this->_fullscreenWindow)
+	{
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
+		this->_contextHandler = std::make_shared<ContextHandler>(vidmode->width, vidmode->height, monitor);
+	}
+	else
+	{
+		this->_contextHandler = std::make_shared<ContextHandler>(motherboardScreenSizeX*this->_screenSizeMulitplier,
+																 motherboardScreenSizeY*this->_screenSizeMulitplier,
+																 nullptr);
+	}
 	
 	glewExperimental = true;
 	GLenum glewError = glewInit();
