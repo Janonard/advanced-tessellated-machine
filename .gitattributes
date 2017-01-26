@@ -1,0 +1,12 @@
+# Set the default behavior
+* text eol=lf
+
+# These are text files and need Unix-like line endings
+*.cpp text
+*.h text
+*.txt text
+*.md text
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.xcf binary

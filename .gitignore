@@ -1,0 +1,7 @@
+.directory/
+.kdev4
+*.kdev4
+*.atmx
+
+build/
+external/
