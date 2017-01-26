@@ -1,0 +1,13 @@
+set(SYSTEM_SRCS
+	src/System/Config.cpp
+	src/System/Config.h
+	src/System/Direction.h
+	src/System/ExtensionNode.cpp
+	src/System/ExtensionNode.h
+	src/System/Motherboard.cpp
+	src/System/Motherboard.h
+	src/System/Node.cpp
+	src/System/Node.h
+	src/System/Uncopyable.cpp
+	src/System/Uncopyable.h
+)

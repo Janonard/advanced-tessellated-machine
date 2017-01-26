@@ -1,0 +1,10 @@
+set(CPU_SRCS
+	src/CPU/CPU.cpp
+	src/CPU/CPU.h
+	src/CPU/CPU_add.cpp
+	src/CPU/CPU_Enums.h
+	src/CPU/CPU_etc.cpp
+	src/CPU/CPU_helpers.cpp
+	src/CPU/CPU_jump.cpp
+	src/CPU/CPU_move.cpp
+)
