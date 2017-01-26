@@ -1,0 +1,47 @@
+;
+; advanced tesselated machine
+; Copyright (C) 2017 Janonard
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+; 
+; This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;
+
+NODE 1 1
+
+move #000F acc
+move #0F00 bcc
+move #000F ccc
+
+byte_shift_l acc
+compare acc bcc
+jump_nequal crash
+
+byte_shift_r acc
+compare acc ccc
+jump_nequal crash
+
+move #01 acc
+move #02 bcc
+move #01 ccc
+
+bit_shift_l acc
+compare acc bcc
+jump_nequal crash
+
+bit_shift_r acc
+compare acc ccc
+jump_nequal crash
+
+halt
+
+crash: dCrash
