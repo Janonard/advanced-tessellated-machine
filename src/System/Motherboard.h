@@ -18,6 +18,8 @@
 #pragma once
 
 #include "System/Node.h"
+#include "System/ContextHandler.h"
+#include <memory>
 
 const int motherboardNodesX = 4;
 const int motherboardNodesY = 4;
@@ -97,7 +99,6 @@ public: // getters and setters
 	void setSlowTickSpeed(float);
 	
 	GLFWwindow* getContext() const;
-	void setContext(GLFWwindow* newContext);
 	
 	State getState() const;
 	
@@ -128,7 +129,7 @@ private: // members
 	/*
 	 * A reference to the currently open glfw context.
 	 */
-	GLFWwindow* _context;
+	std::shared_ptr<ContextHandler> _contextHandler;
 	/*
 	 * The screen size mulitplier
 	 */

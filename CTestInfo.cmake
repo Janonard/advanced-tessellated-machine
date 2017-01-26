@@ -5,6 +5,6 @@ macro(atm_add_test TESTNAME)
 endmacro()
 
 atm_add_test(halt)
-atm_add_test(moveAddress)
-atm_add_test(addAddress)
+atm_add_test(directMemoryAccess)
+atm_add_test(indirectMemoryAccess)
 atm_add_test(hello_world)

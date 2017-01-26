@@ -18,6 +18,28 @@
 
 NODE 1 1
 
+; =====
+; move8
+; =====
+
+move #FF acc
+move8 acc aLocationInMemory
+move8 aLocationInMemory bcc
+
+compare acc bcc
+jump_nequal crash
+
+; ======
+; move16
+; ======
+
+move #FFEE acc
+move16 acc aLocationInMemory
+move16 aLocationInMemory bcc
+
+compare acc bcc
+jump_nequal crash
+
 ; ====
 ; add8
 ; ====
