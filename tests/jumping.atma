@@ -18,23 +18,59 @@
 
 NODE 1 1
 
-move #0101 acc
-move acc left
-move #0648 acc
-move acc left
-move #0645 acc
-move acc left
-move #064C acc
-move acc left
-move acc left
-move #064F acc
-move acc left
+jump stone1
 
-move #1FFE acc
-move #01 bcc
-negate bcc
-loop:
-	add bcc acc
-	compare acc null
-	jump_greater loop
-halt
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone1:
+move null right
+jump_ops stone2
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone2:
+move null right
+jump_opf stone3
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone3:
+move #0F acc
+compare acc null
+jump_greater stone4
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone4:
+compare null acc
+jump_lower stone5
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone5:
+compare null null
+jump_equal stone6
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone6:
+compare acc null
+jump_nequal shore
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+shore: halt

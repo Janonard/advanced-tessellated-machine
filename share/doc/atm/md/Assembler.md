@@ -49,11 +49,11 @@ the executable.
 
 Symbol names may not be a keyword which may confuse the assembler like the
 registers or channels and may not start with `#`, `$` or `@`. Also, two symbols
-must not have the same names.
+must not have the same name.
 
 ### memory manipulation
 
-There are these meta-commands that manipulate resulting memory:
+There are these meta-commands that manipulate the resulting memory directly:
 
 	#var		<8bitInt>
 	#var		<16bitInt>
