@@ -18,5 +18,16 @@
 
 NODE 1 1
 
-splash
+branch subroutine
+move #FF acc
+compare bcc acc
+jump_nequal crash
 halt
+
+subroutine:
+move #0F acc
+move #F0 bcc
+add acc bcc
+return
+
+crash: dCrash

@@ -16,29 +16,13 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 
-NODE 1 1
-
-; ====
-; add8
-; ====
-
-move #FF acc
-move8 acc aLocationInMemory
-move null bcc
-add8 aLocationInMemory bcc
-
+branch routine
+move #FF bcc
 compare acc bcc
 jump_nequal crash
 
-; =====
-; add16
-; =====
-
-move #FFFF acc
-move16 acc aLocationInMemory
-move null bcc
-add16 aLocationInMemory bcc
-
+move16 bin acc
+move #BEEF bcc
 compare acc bcc
 jump_nequal crash
 
@@ -46,4 +30,6 @@ halt
 
 crash: dCrash
 
-aLocationInMemory: #var #0000
+#include <inclusion.routine.atma>
+bin:
+#binary <inclusion.binary.bin>

@@ -114,9 +114,8 @@ bool CPU::execBranch()
 		std::cerr << "ERROR: Maximal size of branch stack reached!" << std::endl;
 		return false;
 	}
-	NODE_INT_TYPE newPosition = this->_memory->get16BitValue(this->_programPointer);
-	this->_branchStack.push_back(this->_programPointer + 4);
-	this->_programPointer = newPosition;
+	this->_branchStack.push_back(this->_programPointer + 2);
+	this->_programPointer = this->_memory->get16BitValue(this->_programPointer);
 	return true;
 }
 

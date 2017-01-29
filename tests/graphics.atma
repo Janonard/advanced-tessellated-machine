@@ -1,0 +1,102 @@
+;
+; advanced tesselated machine
+; Copyright (C) 2017 Janonard
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+; 
+; This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;move #4D1C acc
+
+NODE 1 1
+
+; =============
+; writing tests
+; =============
+
+move #0302 acc
+move acc left
+move #04B2 acc
+move acc left
+
+move #helloWordString# acc
+branch printString
+
+move #0700 acc
+move acc left
+
+branch wait
+
+; =============
+; reading tests
+; =============
+
+move #0302 acc
+move acc left
+move #0494 acc
+move acc left
+
+move #0200 acc
+move acc left
+move left acc
+move #0294 bcc
+compare acc bcc
+jump_nequal crash
+
+move #0500 acc
+move acc left
+move left acc
+move #0048 bcc
+compare acc bcc
+jump_nequal crash
+
+halt
+
+crash: dCrash
+
+wait:
+	move #4D1C acc
+	move #01 bcc
+	negate bcc
+	
+	wait_loop:
+		add bcc acc
+		compare acc null
+		jump_greater wait_loop
+	
+	return
+
+printString:
+	move #0101 bcc
+	move bcc left
+	
+	printString_loop:
+		move8 $acc bcc
+		
+		compare bcc null
+		jump_equal printString_end
+		
+		add #0600 bcc
+		move bcc left
+		
+		add #01 acc
+		jump printString_loop
+		
+	printString_end: return
+	
+	
+helloWordString:
+#var #4845 ; HE
+#var #4C4C ; LL
+#var #4F20 ; O 
+#var #574F ; WO
+#var #524C ; RL
+#var #4400 ; D 

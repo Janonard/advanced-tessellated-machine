@@ -18,30 +18,59 @@
 
 NODE 1 1
 
-; =====
-; move8
-; =====
+jump stone1
 
-move #FF acc
-move8 acc aLocationInMemory
-move8 aLocationInMemory bcc
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
 
-compare acc bcc
-jump_nequal crash
+stone1:
+move null right
+jump_ops stone2
 
-; ======
-; move16
-; ======
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
 
-move #FFEE acc
-move16 acc aLocationInMemory
-move16 aLocationInMemory bcc
+stone2:
+move null right
+jump_opf stone3
 
-compare acc bcc
-jump_nequal crash
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
 
-halt
+stone3:
+move #0F acc
+compare acc null
+jump_greater stone4
 
-crash: dCrash
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
 
-aLocationInMemory: #var #0000
+stone4:
+compare null acc
+jump_lower stone5
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone5:
+compare null null
+jump_equal stone6
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+stone6:
+compare acc null
+jump_nequal shore
+
+dCrash ; ~~~~~
+dCrash ; river
+dCrash ; ~~~~~
+
+shore: halt

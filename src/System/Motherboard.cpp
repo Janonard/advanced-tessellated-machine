@@ -37,7 +37,7 @@ Motherboard::Motherboard() :
 	_nodes(),
 	_tickSpeed(1000000),
 	_slowTickSpeed(1),
-	_context(nullptr),
+	_contextHandler(nullptr),
 	_screenSizeMulitplier(1.0),
 	_state(RUNNING)
 {
@@ -120,7 +120,7 @@ Motherboard::State Motherboard::tick()
 	}
 	
 	glfwPollEvents();
-	if (glfwWindowShouldClose(this->_context) && newState != CRASHED)
+	if (glfwWindowShouldClose(this->getContext()) && newState != CRASHED)
 		newState = HALTED;
 	
 	this->_state = newState;
@@ -165,25 +165,14 @@ bool Motherboard::configure()
 	{
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode* vidmode = glfwGetVideoMode(monitor);
-		this->_context = glfwCreateWindow(vidmode->width,
-											vidmode->height,
-											"advanced tesselated machine",
-											monitor,
-											nullptr);
+		this->_contextHandler = std::make_shared<ContextHandler>(vidmode->width, vidmode->height, monitor);
 	}
 	else
 	{
-		this->_context = glfwCreateWindow(motherboardScreenSizeX*this->_screenSizeMulitplier,
-											motherboardScreenSizeY*this->_screenSizeMulitplier,
-											"advanced tesselated machine",
-											nullptr,
-											nullptr);
+		this->_contextHandler = std::make_shared<ContextHandler>(motherboardScreenSizeX*this->_screenSizeMulitplier,
+																 motherboardScreenSizeY*this->_screenSizeMulitplier,
+																 nullptr);
 	}
-	
-	if (this->_context == NULL)
-		return false;
-	
-	glfwMakeContextCurrent(this->_context);
 	
 	glewExperimental = true;
 	GLenum glewError = glewInit();
@@ -202,7 +191,7 @@ bool Motherboard::configure()
 		for (Node* node : nodeLine)
 		{
 			if (node != nullptr)
-			if (! node->configure(configuration, this->_context))
+			if (! node->configure(configuration, this->getContext()))
 			{
 				return false;
 			}
@@ -227,6 +216,8 @@ bool Motherboard::deconfigure()
 			}
 		}
 	}
+	
+	this->_contextHandler.reset();
 	
 	return true;
 }
@@ -400,12 +391,7 @@ void Motherboard::setSlowTickSpeed(float slowTickSpeed)
 
 GLFWwindow* Motherboard::getContext() const
 {
-	return this->_context;
-}
-
-void Motherboard::setContext(GLFWwindow* newContext)
-{
-	this->_context = newContext;
+	return this->_contextHandler->getContext();
 }
 
 Motherboard::State Motherboard::getState() const

@@ -1,45 +1,36 @@
 # Installation
 
-## Requirements
+ATM currently supports Fedora and Ubuntu, if you have another Distro or Windows, you have to wait
+or port it on your own. Also, you need a graphics card supporting OpenGL 3.2.
 
-ATM currently only supports Linux, what means that when you have Windows, you have to wait a while
-until it has been ported. There are builds provided for 32 and 64-bit PCs and a graphics card
-supporting OpenGL version 3.2 is required too. 
+Since there are no packages of ATM yet, you need to download and build ATM on your own. Don't worry,
+this sounds harder than it is. All you need is moving around in bash and entering some commands.
 
-## Download
+The first step is to open a terminal and install the dependecies. You can do this with these commands:
 
-You can download ATM from it's [github release page](https://github.com/Janonard/advanced-tessellated-machine/releases)
-and you can choose between an RPM package and a TAR.GZ archive. When you have Fedora or SUSE, you
-should choose the RPM package, otherwise, the TAR.GZ is your choice. If you don't know whether your
-PC is a 32 or a 64-bit machine, you should choose the 32-bit version since it works on 64-bit PCs
-too.
+	# Fedora
+	sudo dnf install git cmake clang glfw-devel SOIL-devel libGLEW-devel boost-devel
+	# Ubuntu
+	sudo apt-get update && sudo apt-get install git cmake clang libglfw3-dev libsoil1-dev libglew-dev libboost-devel
 
+When these commands have finished, you shall download ATM:
 
-## Installation
+	git clone https://github.com/Janonard/advanced-tessellated-machine.git
 
-### RPM
+Next you enter the source code, create a build directory and build it.
 
-After you have downloaded ATM, you only have to run this command on the package:
+	cd advanced-tessellated-machine
+	mkdir build
+	cd build
+	cmake ..
+	make
 
-	sudo dnf install ./your-package.rpm
+This should take a while. After that you should test your build by entering
 
-When you don't have rpm, you can do it with yum too:
+	make test
 
-	sudo yum install ./your-package.rpm
+All tests should pass. In the end, you install everything with this command:
+
+	sudo make install
 	
-Naturally, you have to replace `your-package` with the proper name of your package.
-
-### .tar.gz
-
-As mentioned before, this thing is a bit more complicated. First, you have to install the required software,
-which is: `glfw` version 3.2, `soil` version 1.07, `glew` version 1.13 and `boost_filesystem` version 1.60. Newer version
-will do it too, older maybe, but try to get these versions, since those are the versions I use. Installation may vary
-from system to system, you propably know yours better than I do.
-
-Next, you should unpack the archive. You can use the "unpack here" variant of your favorite package manager, since
-it contains a internal folder. After doing this, you open a terminal in this folder and enter this:
-
-	sudo cp -r bin /usr/local/bin/
-	sudo cp -r share /usr/local/share/
-
-These commands copy the binary and shared files into the standart directories.
+You're done! Was it really so hard?

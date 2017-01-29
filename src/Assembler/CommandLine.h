@@ -52,6 +52,9 @@ public:
 	
 	const std::vector<Symbol>& getSymbols() const;
 	
+	const std::vector<std::string>& getIncludedFiles() const;
+	void setIncludedFiles(const std::vector<std::string>& includedFiles);
+	
 private:
 	/*
 	 * takes the first word of our line and creates a symbol with it.
@@ -85,6 +88,11 @@ private:
 	 * the path of the file we belong to
 	 */
 	std::string _fileName;
+	
+	/*
+	 * A vector of all files we have already included
+	 */
+	std::vector<std::string> _includedFiles;
 	
 	/*
 	 * our assembler code line

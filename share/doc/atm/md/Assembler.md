@@ -49,11 +49,11 @@ the executable.
 
 Symbol names may not be a keyword which may confuse the assembler like the
 registers or channels and may not start with `#`, `$` or `@`. Also, two symbols
-must not have the same names.
+must not have the same name.
 
 ### memory manipulation
 
-There are these meta-commands that manipulate resulting memory:
+There are these meta-commands that manipulate the resulting memory directly:
 
 	#var		<8bitInt>
 	#var		<16bitInt>
@@ -82,4 +82,8 @@ while `#binary` simply copies the contents of the file into the binary.
 
 The paths are relative to the including file, therefore when you `#include <routines/foo.atma>`
 in file `/home/bar/test.atma`, the assembler will look for `/home/bar/routines/foo.atma`
-and will cry if it does not find it.
+and will cry if it does not find it. Also, when you try to include a file to
+an executable twice, nothing will happen. The assembler will simply ignore it.
+Therefore, you can create a file with a subroutine that includes everything
+it needs. If a needed file isn't included, it will be, and if it is, every symbol
+will refer to the first inclusion.

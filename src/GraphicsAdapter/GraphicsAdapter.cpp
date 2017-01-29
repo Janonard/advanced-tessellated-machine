@@ -430,7 +430,7 @@ bool GraphicsAdapter::execScrollLine()
 		try
 		{
 			GLint movingChar = this->_vertexBuffer->getCharacter(currentPosition + charCountX);
-			this->_vertexBuffer->setCharacter(currentPosition + charCountX, movingChar);
+			this->_vertexBuffer->setCharacter(currentPosition, movingChar);
 		}
 		catch (std::out_of_range e)
 		{
@@ -446,11 +446,12 @@ bool GraphicsAdapter::execScrollLine()
 	{
 		try
 		{
-			this->_vertexBuffer->setCharacter(currentPosition + charCountX, (GLint) ' ');
+			this->_vertexBuffer->setCharacter(currentPosition, (GLint) ' ');
 		}
 		catch (std::out_of_range e)
 		{
 			std::cerr << "ERROR: Graphic Adapter's character pointer is out of range!" << std::endl;
+			std::cerr << currentPosition << std::endl;
 			return false;
 		}
 		currentPosition++;

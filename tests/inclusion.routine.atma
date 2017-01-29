@@ -16,7 +16,10 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 
-NODE 1 1
+routine:
+move #0F acc
+move #F0 bcc
+add bcc acc
+return
 
-splash
-halt
+#include <inclusion.routine.atma>

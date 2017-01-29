@@ -18,23 +18,30 @@
 
 NODE 1 1
 
-move #0101 acc
-move acc left
-move #0648 acc
-move acc left
-move #0645 acc
-move acc left
-move #064C acc
-move acc left
-move acc left
-move #064F acc
-move acc left
+move #000F acc
+move #0F00 bcc
+move #000F ccc
 
-move #1FFE acc
-move #01 bcc
-negate bcc
-loop:
-	add bcc acc
-	compare acc null
-	jump_greater loop
+byte_shift_l acc
+compare acc bcc
+jump_nequal crash
+
+byte_shift_r acc
+compare acc ccc
+jump_nequal crash
+
+move #01 acc
+move #02 bcc
+move #01 ccc
+
+bit_shift_l acc
+compare acc bcc
+jump_nequal crash
+
+bit_shift_r acc
+compare acc ccc
+jump_nequal crash
+
 halt
+
+crash: dCrash

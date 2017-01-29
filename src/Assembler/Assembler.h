@@ -40,6 +40,12 @@ public:
 	void setFileName(const std::string fileName);
 	
 	/*
+	 * included files access
+	 */
+	const std::vector<std::string>& getIncludedFiles() const;
+	void setIncludedFiles(const std::vector<std::string>& includedFiles);
+	
+	/*
 	 * memory offset access
 	 */
 	NODE_INT_TYPE getMemoryOffset() const;
@@ -54,6 +60,8 @@ public:
 protected: // variables
 	
 	std::string _fileName;
+	
+	std::vector<std::string> _includedFiles;
 	
 	std::vector<CommandLine> _lines;
 	

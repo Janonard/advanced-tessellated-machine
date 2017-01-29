@@ -1,6 +1,8 @@
 set(SYSTEM_SRCS
 	src/System/Config.cpp
 	src/System/Config.h
+	src/System/ContextHandler.cpp
+	src/System/ContextHandler.h
 	src/System/Direction.h
 	src/System/ExtensionNode.cpp
 	src/System/ExtensionNode.h

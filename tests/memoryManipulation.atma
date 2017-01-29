@@ -18,5 +18,37 @@
 
 NODE 1 1
 
-splash
+move #FF acc
+move8 var0 bcc
+compare acc bcc
+jump_nequal crash
+
+move #EEEE acc
+move16 var1 bcc
+compare acc bcc
+jump_nequal crash
+
+move #spaceBegin# acc
+add #0102 acc
+move #spaceEnd# bcc
+compare acc bcc
+jump_nequal crash
+
+move #positioned# acc
+move #0200 bcc
+compare acc bcc
+jump_nequal crash
+
 halt
+
+crash: dCrash
+
+var0: #var #FF
+var1: #var #EEEE
+
+spaceBegin: #var #DEAD
+#space $0100
+spaceEnd: #var #BEEF
+
+#position $0200
+positioned: #var #FF

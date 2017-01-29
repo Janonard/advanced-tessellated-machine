@@ -18,5 +18,66 @@
 
 NODE 1 1
 
-splash
+move #FFFF acc
+
+move acc right
+pull0: move right bcc
+jump_opf pull0
+compare acc bcc
+jump_nequal crash
+
+move acc downRight
+pull1: move downRight bcc
+jump_opf pull1
+compare acc bcc
+jump_nequal crash
+
+move acc down
+pull2: move down bcc
+jump_opf pull2
+compare acc bcc
+jump_nequal crash
+
 halt
+
+crash: dCrash
+
+NODE 2 1
+
+pull0: move left acc
+jump_opf pull0
+
+move acc left
+
+pull1: move downLeft acc
+jump_opf pull1
+
+move acc downLeft
+
+halt
+
+NODE 2 2
+
+pull0: move upLeft acc
+jump_opf pull0
+move acc upLeft
+halt
+
+NODE 1 2
+
+pull0: move up acc
+jump_opf pull0
+
+move acc upRight
+
+pull1: move upRight bcc
+jump_opf pull1
+
+compare acc bcc
+jump_nequal crash
+
+move acc up
+
+halt
+
+crash: dCrash
