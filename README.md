@@ -25,7 +25,7 @@ the terms of the [GNU Public License](LICENSE).
 To build the code, you need some software. Only Linux is supported, Windows not yet
 and Mac propably never will.
 
-When you are on Ubuntu/Debian/etc., install the software by entering this into a terminal:
+When you are on Ubuntu, install the software by entering this into a terminal:
 
 	sudo apt-get update && sudo apt-get install git cmake clang libgflw-dev libsoil-dev libglew-dev
 	
@@ -40,10 +40,13 @@ After you have done this, you should download the source code with this command:
 Then you use these commands to create a build directory and compile the code:
 
 	cd advanced-tesselated-machine
+	sudo ./install_shared_files.sh
 	mkdir build
 	cd build
 	cmake ..
 	make
+	
+Maybe you want to test whether you binaries are okay or not? Use this:
 
 When you want to install the binaries after building, you use:
 

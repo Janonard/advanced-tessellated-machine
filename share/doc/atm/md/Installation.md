@@ -6,31 +6,30 @@ or port it on your own. Also, you need a graphics card supporting OpenGL 3.2.
 Since there are no packages of ATM yet, you need to download and build ATM on your own. Don't worry,
 this sounds harder than it is. All you need is moving around in bash and entering some commands.
 
-The first step is to open a terminal and install the dependecies. You can do this with these commands:
+To build the code, you need some software. When you are on Ubuntu, install the software by entering
+this into a terminal:
 
-	# Fedora
-	sudo dnf install git cmake clang glfw-devel SOIL-devel libGLEW-devel boost-devel
-	# Ubuntu
-	sudo apt-get update && sudo apt-get install git cmake clang libglfw3-dev libsoil1-dev libglew-dev libboost-devel
+	sudo apt-get update && sudo apt-get install git cmake clang libgflw-dev libsoil-dev libglew-dev
+	
+When you are on Fedora, you use this instead:
 
-When these commands have finished, you shall download ATM:
+	sudo dnf install git cmake clang glfw-devel SOIL-devel libGLEW-devel
 
-	git clone https://github.com/Janonard/advanced-tessellated-machine.git
+After you have done this, you should download the source code with this command:
 
-Next you enter the source code, create a build directory and build it.
+	git clone https://github.com/Janonard/advanced-tesselated-machine.git
 
-	cd advanced-tessellated-machine
+Then you use these commands to create a build directory and compile the code:
+
+	cd advanced-tesselated-machine
+	sudo ./install_shared_files.sh
 	mkdir build
 	cd build
 	cmake ..
 	make
+	
+Maybe you want to test whether you binaries are okay or not? Use this:
 
-This should take a while. After that you should test your build by entering
-
-	make test
-
-All tests should pass. In the end, you install everything with this command:
+When you want to install the binaries after building, you use:
 
 	sudo make install
-	
-You're done! Was it really so hard?
