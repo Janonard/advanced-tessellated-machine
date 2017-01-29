@@ -888,6 +888,7 @@ bool CommandLine::identifyCommand(const string& word)
 			std::shared_ptr<Assembler> includedAssemblerFile = std::make_shared<Assembler>();
 			includedAssemblerFile->setMemoryOffset(this->_memPosition);
 			includedAssemblerFile->setIncludedFiles(this->_includedFiles);
+			includedAssemblerFile->setFileName(pathToFile.string());
 			
 			shared_ptr<ExecutableElement> execElement = AssemblerFunc::assembleText(includedAssemblerFile.get(), sourceFileStream);
 			
