@@ -1,4 +1,4 @@
-# advanced tesselated machine
+# advanced tessellated machine
 
 Welcome to the world of the advanced tesselated machine!
 
