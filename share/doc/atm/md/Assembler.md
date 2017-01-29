@@ -82,4 +82,8 @@ while `#binary` simply copies the contents of the file into the binary.
 
 The paths are relative to the including file, therefore when you `#include <routines/foo.atma>`
 in file `/home/bar/test.atma`, the assembler will look for `/home/bar/routines/foo.atma`
-and will cry if it does not find it.
+and will cry if it does not find it. Also, when you try to include a file to
+an executable twice, nothing will happen. The assembler will simply ignore it.
+Therefore, you can create a file with a subroutine that includes everything
+it needs. If a needed file isn't included, it will be, and if it is, every symbol
+will refer to the first inclusion.

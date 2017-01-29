@@ -30,6 +30,7 @@ using namespace std;
 
 CommandLine::CommandLine() :
 	_fileName(),
+	_includedFiles(),
 	_line(),
 	_lineNumber(0),
 	_memPosition(0),
@@ -201,6 +202,16 @@ vector<uint8_t> CommandLine::getMachinecode() const
 const vector<Symbol>& CommandLine::getSymbols() const
 {
 	return this->_symbols;
+}
+
+const std::vector<std::string> & CommandLine::getIncludedFiles() const
+{
+	return this->_includedFiles;
+}
+
+void CommandLine::setIncludedFiles(const std::vector<std::string>& includedFiles)
+{
+	this->_includedFiles = includedFiles;
 }
 
 bool CommandLine::identifyCommand(const string& word)
@@ -865,12 +876,22 @@ bool CommandLine::identifyCommand(const string& word)
 			pathToFile.remove_filename();
 			pathToFile.append(pathArg);
 			
+			if (find(this->_includedFiles.begin(), this->_includedFiles.end(), pathToFile.string()) != this->_includedFiles.end())
+			{
+				return true;
+			}
+			
+			this->_includedFiles.push_back(pathToFile.string());
+			
 			fstream sourceFileStream(pathToFile.string(), ios_base::in);
 			
 			std::shared_ptr<Assembler> includedAssemblerFile = std::make_shared<Assembler>();
 			includedAssemblerFile->setMemoryOffset(this->_memPosition);
+			includedAssemblerFile->setIncludedFiles(this->_includedFiles);
 			
 			shared_ptr<ExecutableElement> execElement = AssemblerFunc::assembleText(includedAssemblerFile.get(), sourceFileStream);
+			
+			this->_includedFiles = includedAssemblerFile->getIncludedFiles();
 			
 			if (execElement.get() == nullptr)
 			{

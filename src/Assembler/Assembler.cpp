@@ -25,6 +25,7 @@ using namespace std;
 
 Assembler::Assembler() : 
 	_fileName(),
+	_includedFiles(),
 	_lines(),
 	_memoryOffset(0),
 	_symbols()
@@ -39,6 +40,16 @@ const string& Assembler::getFileName() const
 void Assembler::setFileName(const string fileName)
 {
 	this->_fileName = fileName;
+}
+
+const std::vector<std::string> & Assembler::getIncludedFiles() const
+{
+	return this->_includedFiles;
+}
+
+void Assembler::setIncludedFiles(const std::vector<std::string>& includedFiles)
+{
+	this->_includedFiles = includedFiles;
 }
 
 NODE_INT_TYPE Assembler::getMemoryOffset() const
@@ -115,10 +126,12 @@ shared_ptr<ExecutableElement> AssemblerFunc::assembleText(Assembler* assFile, io
 	for (vector<string> line : filteredSourceCode)
 	{
 		commands.push_back(make_shared<CommandLine>());
+		commands.back()->setIncludedFiles(assFile->getIncludedFiles());
 		if (! commands.back()->loadLine(line, assFile->getFileName(), lineNumber, position))
 		{
 			return nullptr;
 		}
+		assFile->setIncludedFiles(commands.back()->getIncludedFiles());
 		
 		vector<Symbol> symbols = assFile->getSymbols();
 		for(Symbol newSymbol : commands.back()->getSymbols())

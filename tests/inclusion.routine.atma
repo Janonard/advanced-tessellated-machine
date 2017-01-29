@@ -21,3 +21,5 @@ move #0F acc
 move #F0 bcc
 add bcc acc
 return
+
+#include <inclusion.routine.atma>
