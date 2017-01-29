@@ -889,10 +889,12 @@ bool CommandLine::identifyCommand(const string& word)
 			includedAssemblerFile->setMemoryOffset(this->_memPosition);
 			includedAssemblerFile->setIncludedFiles(this->_includedFiles);
 			includedAssemblerFile->setFileName(pathToFile.string());
+			includedAssemblerFile->setSymbols(this->_symbols);
 			
 			shared_ptr<ExecutableElement> execElement = AssemblerFunc::assembleText(includedAssemblerFile.get(), sourceFileStream);
 			
 			this->_includedFiles = includedAssemblerFile->getIncludedFiles();
+			this->_symbols = includedAssemblerFile->getSymbols();
 			
 			if (execElement.get() == nullptr)
 			{
