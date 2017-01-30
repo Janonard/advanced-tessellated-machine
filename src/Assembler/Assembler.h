@@ -17,68 +17,46 @@
  */
 #pragma once
 
-#include <string>
 #include <vector>
+#include <stack>
+#include <string>
 #include <memory>
-#include "Assembler/CommandLine.h"
+
+#include "System/Uncopyable.h"
 #include "Executable/ExecutableElement.h"
 
-// An object of this class represents a file with assembler code.
-// It reads the code, splits it into lines and assembles them.
-class Assembler
+class Assembler : public Uncopyable
 {
-public:
-	/*
-	 * Standart constructor
-	 */
+	
+public: // methods
 	Assembler();
+	~Assembler() override;
 	
-	/*
-	 * file name access
-	 */
-	const std::string& getFileName() const;
-	void setFileName(const std::string fileName);
+	bool assembleText();
 	
-	/*
-	 * included files access
-	 */
-	const std::vector<std::string>& getIncludedFiles() const;
-	void setIncludedFiles(const std::vector<std::string>& includedFiles);
+private: // methods
 	
-	/*
-	 * memory offset access
-	 */
-	NODE_INT_TYPE getMemoryOffset() const;
-	void setMemoryOffset(NODE_INT_TYPE newMemoryOffset);
+	bool assembleLine();
 	
-	/*
-	 * symbol vector access
-	 */
-	const std::vector<Symbol>& getSymbols() const;
-	void setSymbols(const std::vector<Symbol>& symbols);
-
-protected: // variables
+	void printErrorHeader();
 	
-	std::string _fileName;
+public: // member access
 	
-	std::vector<std::string> _includedFiles;
+	const std::string& getText() const;
+	void setText(const std::string& text);
 	
-	std::vector<CommandLine> _lines;
+	std::vector<std::shared_ptr<ExecutableElement>> getElements() const;
+	void resetElements();
 	
-	NODE_INT_TYPE _memoryOffset;
+	const std::string& getCurrentFilePath() const;
+	void setBaseFilePath(std::string baseFilePath);
 	
-	std::vector<Symbol> _symbols;
+private: // members
+	std::string _text;
+	
+	std::vector<std::string> _line;
+	
+	std::vector<std::shared_ptr<ExecutableElement>> _elements;
+	
+	std::stack<std::string> _filePathStack;
 };
-
-namespace AssemblerFunc
-{
-	/*
-	 * Splits the given source code into words and lines while leaving out comments.
-	 */
-	void splitLinesFilterComments(std::iostream& textStream, std::vector<std::vector<std::string>>* outFilteredSourcecode);
-	
-	/*
-	 * Does the whole assembly.
-	 */
-	std::shared_ptr<ExecutableElement> assembleText(Assembler* assFile, std::iostream& textStream);
-}

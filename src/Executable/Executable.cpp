@@ -178,60 +178,16 @@ void Executable::saveExecutable() const throw(LoadingException)
 
 void Executable::assembleFile(const string& fileText) throw(LoadingException)
 {
-	stringstream fileTextStream(fileText);
-	string currentLine = string();
-	stringstream currentStream;
-	uint currentLineNumber = 1;
-	uint x = 0;
-	uint y = 0;
+	shared_ptr<Assembler> newAssembler = make_shared<Assembler>();
+	newAssembler->setBaseFilePath(this->_filePath);
+	newAssembler->setText(fileText);
 	
-	while (getline(fileTextStream,currentLine).good())
+	if (newAssembler->assembleText())
 	{
-		if (currentLine.substr(0,4) == executableNodeCommand && currentLine.size() == 8)
-		{
-			this->assembleStream(currentStream, x, y);
-			
-			try
-			{
-				uint newX = stoi(currentLine.substr(5,1));
-				x = newX;
-				uint newY = stoi(currentLine.substr(7,1));
-				y = newY;
-			}
-			catch (invalid_argument e)
-			{
-				throw(LoadingException("Bad node coordinates!"));
-			}
-		}
-		else
-		{
-			currentStream << currentLine << endl;
-		}
-		currentLineNumber++;
+		this->_elements = newAssembler->getElements();
 	}
-	
-	this->assembleStream(currentStream, x, y);
-}
-
-void Executable::assembleStream(stringstream& textStream, uint x, uint y) throw(LoadingException)
-{
-	if (textStream.str().size() > 0)
+	else
 	{
-		shared_ptr<Assembler> newAssembler = make_shared<Assembler>();
-		newAssembler->setFileName(this->_filePath);
-		
-		auto execElement = AssemblerFunc::assembleText(newAssembler.get(), textStream);
-		if (execElement.get() != nullptr)
-		{
-			execElement->setX(x);
-			execElement->setY(y);
-			this->_elements.push_back(execElement);
-		}
-		else
-		{
-			throw(LoadingException("Assembly failed"));
-		}
+		throw(LoadingException("Assembly failed"));
 	}
-	
-	textStream = stringstream();
 }

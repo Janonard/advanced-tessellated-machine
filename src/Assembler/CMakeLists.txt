@@ -1,9 +1,4 @@
 set(ASSEMBLER_SRCS
 	src/Assembler/Assembler.cpp
 	src/Assembler/Assembler.h
-	src/Assembler/CommandLine.cpp
-	src/Assembler/CommandLine.h
-	src/Assembler/Mnemonics.h
-	src/Assembler/Symbol.cpp
-	src/Assembler/Symbol.h
 )

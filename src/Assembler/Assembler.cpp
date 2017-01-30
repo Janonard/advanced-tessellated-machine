@@ -16,158 +16,146 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Assembler/Assembler.h"
-#include <string>
 #include <iostream>
-#include <sstream>
-#include "Assembler/Mnemonics.h"
 
 using namespace std;
 
-Assembler::Assembler() : 
-	_fileName(),
-	_includedFiles(),
-	_lines(),
-	_memoryOffset(0),
-	_symbols()
+Assembler::Assembler() :
+	_text(),
+	_line(),
+	_elements(),
+	_filePathStack()
 {
 }
 
-const string& Assembler::getFileName() const
+Assembler::~Assembler()
 {
-	return this->_fileName;
 }
 
-void Assembler::setFileName(const string fileName)
+bool Assembler::assembleText()
 {
-	this->_fileName = fileName;
-}
-
-const std::vector<std::string> & Assembler::getIncludedFiles() const
-{
-	return this->_includedFiles;
-}
-
-void Assembler::setIncludedFiles(const std::vector<std::string>& includedFiles)
-{
-	this->_includedFiles = includedFiles;
-}
-
-NODE_INT_TYPE Assembler::getMemoryOffset() const
-{
-	return this->_memoryOffset;
-}
-
-void Assembler::setMemoryOffset(NODE_INT_TYPE newMemoryOffset)
-{
-	this->_memoryOffset = newMemoryOffset;
-}
-
-const vector<Symbol>& Assembler::getSymbols() const
-{
-	return this->_symbols;
-}
-
-void Assembler::setSymbols(const vector<Symbol>& symbols)
-{
-	this->_symbols = symbols;
-}
-
-void AssemblerFunc::splitLinesFilterComments(iostream& textStream, vector<vector<string>>* outFilteredSourcecode)
-{
-	auto filteredSourceCode = vector<vector<string>>();
-	vector<string> emptyLine = vector<string>();
-	emptyLine.push_back("");
-	filteredSourceCode.push_back(emptyLine);
+	this->_line = vector<string>();
+	this->_line.push_back("");
 	
-	bool commentFound = false;
-	char nextCharacter = ' ';
+	bool commenting = false;
+	bool bracketing = false;
 	
-	while (textStream.get(nextCharacter))
+	while (this->_text.size() > 0)
 	{
-		if (nextCharacter == (char) 10 || nextCharacter == (char) 13)
+		char c = this->_text[0];
+		this->_text.erase(0,1);
+		
+		if (bracketing)
 		{
-			filteredSourceCode.push_back(emptyLine);
-			commentFound = false;
-		}
-		else
-		if (nextCharacter == ';')
-		{
-			commentFound = true;
-		}
-		else
-		if (! commentFound)
-		{
-			if ((nextCharacter == ' ') | (nextCharacter == '\t'))
+			if (c == '\n')
 			{
-				if (filteredSourceCode.back().back() != "")
-				{
-					filteredSourceCode.back().push_back("");
-				}
+				this->printErrorHeader();
+				cerr << "Cannot start a new line while having a bracket open!" << endl;
+				return false;
+			}
+			else if (c == ';')
+			{
+				this->printErrorHeader();
+				cerr << "Cannot start a comment while having a bracket open!" << endl;
+				return false;
+			}
+			else if (c == '>')
+			{
+				this->_line.back().push_back(c);
+				bracketing = false;
 			}
 			else
 			{
-				filteredSourceCode.back().back().push_back(nextCharacter); // push our character at the end of the last word of the last line
+				this->_line.back().push_back(c);
+			}
+		}
+		else
+		{
+			if (c == '\n')
+			{
+				if (! this->assembleLine())
+					return false;
+				
+				this->_line = vector<string>();
+				this->_line.push_back("");
+				commenting = false;
+			}
+			else if (! commenting)
+			{
+				if (c == '<')
+				{
+					this->_line.back().push_back(c);
+					bracketing = true;
+				}
+				else if (c == ';')
+				{
+					commenting = true;
+				}
+				else if ((c == ' ') or (c == '\t'))
+				{
+					if (this->_line.back().size() > 0)
+					{
+						this->_line.push_back("");
+					}
+				}
+				else
+				{
+					this->_line.back().push_back(c);
+				}
 			}
 		}
 	}
 	
-	*outFilteredSourcecode = filteredSourceCode;
+	if (this->_line[0].size() > 0) // which means that there is something
+	{
+		return this->assembleLine();
+	}
+	else
+		return true;
 }
 
-shared_ptr<ExecutableElement> AssemblerFunc::assembleText(Assembler* assFile, iostream& textStream)
+bool Assembler::assembleLine()
 {
-	vector<vector<string>> filteredSourceCode;
-	splitLinesFilterComments(textStream, &filteredSourceCode);
-	
-	int lineNumber = 1;
-	NODE_INT_TYPE position = assFile->getMemoryOffset();
-	
-	auto commands = vector<shared_ptr<CommandLine>>();
-	for (vector<string> line : filteredSourceCode)
+	for (string word : this->_line)
 	{
-		commands.push_back(make_shared<CommandLine>());
-		commands.back()->setIncludedFiles(assFile->getIncludedFiles());
-		if (! commands.back()->loadLine(line, assFile->getFileName(), lineNumber, position))
-		{
-			return nullptr;
-		}
-		assFile->setIncludedFiles(commands.back()->getIncludedFiles());
-		
-		vector<Symbol> symbols = assFile->getSymbols();
-		for(Symbol newSymbol : commands.back()->getSymbols())
-		{
-			symbols.push_back(newSymbol);
-		}
-		assFile->setSymbols(symbols);
-		
-		uint newPosition = uint(position) + uint(commands.back()->getMachinecode().size());
-		if (newPosition <= 0xFFFF)
-		{
-			position = NODE_INT_TYPE(newPosition);
-		}
-		else
-		{
-			cerr << "ERROR in line " << lineNumber << ": memory position out of range. The final binary may not be bigger than 0xFFFF!" << endl;
-			return nullptr;
-		}
-		lineNumber++;
+		cout << word << "|";
 	}
-	
-	vector<uint8_t> newMachinecode = vector<uint8_t>();
-	for (shared_ptr<CommandLine> singleCommand : commands)
-	{
-		if (! singleCommand->solveSymbols(assFile->getSymbols()))
-		{
-			return nullptr;
-		}
-		
-		for (uint8_t nextCharacter : singleCommand->getMachinecode())
-		{
-			newMachinecode.push_back(nextCharacter);
-		}
-	}
-	
-	shared_ptr<ExecutableElement> executable = make_shared<ExecutableElement>();
-	executable->setMemory(newMachinecode);
-	return executable;
+	cout << endl;
+	return true;
+}
+
+void Assembler::printErrorHeader()
+{
+	cerr << "ERROR while assembling file '" << _filePathStack.top() << "'!" << endl;
+}
+
+const std::string & Assembler::getText() const
+{
+	return this->_text;
+}
+
+void Assembler::setText(const std::string& text)
+{
+	this->_text = text;
+}
+
+vector<shared_ptr<ExecutableElement>> Assembler::getElements() const
+{
+	return this->_elements;
+}
+
+void Assembler::resetElements()
+{
+	this->_elements = vector<shared_ptr<ExecutableElement>>();
+}
+
+const std::string & Assembler::getCurrentFilePath() const
+{
+	return this->_filePathStack.top();
+}
+
+void Assembler::setBaseFilePath(std::string baseFilePath)
+{
+	this->_filePathStack = stack<string>();
+	this->_filePathStack.push(baseFilePath);
 }

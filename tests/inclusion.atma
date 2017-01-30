@@ -30,6 +30,6 @@ halt
 
 crash: dCrash
 
-#include <inclusion.routine.atma>
+#include <inclusion routine.atma>
 bin:
-#binary <inclusion.binary.bin>
+#binary <inclusion binary.bin>

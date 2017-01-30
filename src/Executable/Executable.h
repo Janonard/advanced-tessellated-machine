@@ -83,8 +83,6 @@ private: // methods
 	
 	void assembleFile(const std::string& fileText) throw(LoadingException);
 	
-	void assembleStream(std::stringstream& textStream, uint x, uint y) throw(LoadingException);
-	
 private: // properties
 	
 	/*
