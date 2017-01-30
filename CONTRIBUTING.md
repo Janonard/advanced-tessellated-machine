@@ -12,7 +12,6 @@ you may comment that you've encountered this bug too.
 If nobody found your bug, please create an issue with a bug report. It should contain:
 
 * An appropriate title that briefly explains what your bug is about
-* Which version of ATM you use
 * What you have done to encounter the bug
 * What you expected to happen
 * What happened instead
