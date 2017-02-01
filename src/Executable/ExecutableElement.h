@@ -21,6 +21,8 @@
 
 #include "System/Node.h"
 
+typedef std::vector<uint8_t> Memory;
+
 /*
  * This contains the memory and the coordinates of an executable element.
  */
@@ -51,13 +53,13 @@ public:
 	/*
 	 * Returns a copy of the whole memory.
 	 */
-	std::vector<uint8_t> getMemory() const
+	Memory getMemory() const
 		{return this->_memory;}
 	
 	/*
 	 * Sets _memory
 	 */
-	void setMemory(std::vector<uint8_t> newMemory)
+	void setMemory(Memory newMemory)
 		{this->_memory = newMemory;}
 	
 	/*
@@ -96,6 +98,6 @@ private:
 	/*
 	 * Our memory
 	 */
-	std::vector<uint8_t> _memory;
+	Memory _memory;
 	
 };

@@ -22,111 +22,100 @@ using namespace std;
 
 Assembler::Assembler() :
 	_text(),
-	_line(),
+	_lines(),
 	_elements(),
-	_filePathStack()
+	_symbols(),
+	_baseFilePath()
 {
+	try
+	{
+		this->_symbols = make_shared<SymbolMap>();
+	}
+	catch (bad_alloc e)
+	{
+		this->printErrorHeader();
+		throw(e);
+	}
 }
 
 Assembler::~Assembler()
 {
+	this->_symbols.reset();
 }
 
 bool Assembler::assembleText()
 {
-	this->_line = vector<string>();
-	this->_line.push_back("");
+	string currentLine = string();
+	uint currentLineNumber = 1;
 	
-	bool commenting = false;
-	bool bracketing = false;
-	
-	while (this->_text.size() > 0)
+	for (char c : this->_text)
 	{
-		char c = this->_text[0];
-		this->_text.erase(0,1);
-		
-		if (bracketing)
+		if (c == '\n')
 		{
-			if (c == '\n')
-			{
-				this->printErrorHeader();
-				cerr << "Cannot start a new line while having a bracket open!" << endl;
+			if (! this->assembleLine(currentLine, currentLineNumber))
 				return false;
-			}
-			else if (c == ';')
-			{
-				this->printErrorHeader();
-				cerr << "Cannot start a comment while having a bracket open!" << endl;
-				return false;
-			}
-			else if (c == '>')
-			{
-				this->_line.back().push_back(c);
-				bracketing = false;
-			}
-			else
-			{
-				this->_line.back().push_back(c);
-			}
+			currentLine = string();
+			currentLineNumber++;
 		}
 		else
 		{
-			if (c == '\n')
-			{
-				if (! this->assembleLine())
-					return false;
-				
-				this->_line = vector<string>();
-				this->_line.push_back("");
-				commenting = false;
-			}
-			else if (! commenting)
-			{
-				if (c == '<')
-				{
-					this->_line.back().push_back(c);
-					bracketing = true;
-				}
-				else if (c == ';')
-				{
-					commenting = true;
-				}
-				else if ((c == ' ') or (c == '\t'))
-				{
-					if (this->_line.back().size() > 0)
-					{
-						this->_line.push_back("");
-					}
-				}
-				else
-				{
-					this->_line.back().push_back(c);
-				}
-			}
+			currentLine.push_back(c);
 		}
 	}
 	
-	if (this->_line[0].size() > 0) // which means that there is something
+	if (currentLine.size() > 0)
 	{
-		return this->assembleLine();
+		return this->assembleLine(currentLine, currentLineNumber);
 	}
 	else
+	{
 		return true;
+	}
 }
 
-bool Assembler::assembleLine()
+bool Assembler::assembleLine(string line, uint lineNumber)
 {
-	for (string word : this->_line)
+	shared_ptr<AssemblerLine> newLine(nullptr);
+	
+	try
 	{
-		cout << word << "|";
+		newLine = make_shared<AssemblerLine>();
 	}
-	cout << endl;
+	catch (std::bad_alloc e)
+	{
+		this->printErrorHeader();
+		cerr << "Could not allocate new memory!" << endl;
+		throw(e);
+	}
+	
+	newLine->setRawLine(line);
+	newLine->setLineNumber(lineNumber);
+	newLine->setFilePath(this->getBaseFilePath());
+	newLine->setSymbols(this->_symbols);
+	
+	this->_lines.push_back(newLine);
+	
+	if (! newLine->assembleLine())
+		return false;
+	
+	for (shared_ptr<AssemblerLine> additionalLine : newLine->getAdditionaLines())
+	{
+		this->_lines.push_back(additionalLine);
+	}
+	
 	return true;
 }
 
 void Assembler::printErrorHeader()
 {
-	cerr << "ERROR while assembling file '" << _filePathStack.top() << "'!" << endl;
+	if (this->_lines.size() > 0 && this->_lines.back().get() != nullptr)
+	{
+		this->_lines.back()->printErrorHeader();
+	}
+	else
+	{
+		cerr << "ERROR while assembling!" << endl;
+	}
 }
 
 const std::string & Assembler::getText() const
@@ -144,18 +133,22 @@ vector<shared_ptr<ExecutableElement>> Assembler::getElements() const
 	return this->_elements;
 }
 
+std::shared_ptr<SymbolMap> Assembler::getSymbols() const
+{
+	return this->_symbols;
+}
+
 void Assembler::resetElements()
 {
 	this->_elements = vector<shared_ptr<ExecutableElement>>();
 }
 
-const std::string & Assembler::getCurrentFilePath() const
+const std::string & Assembler::getBaseFilePath() const
 {
-	return this->_filePathStack.top();
+	return this->_baseFilePath;
 }
 
 void Assembler::setBaseFilePath(std::string baseFilePath)
 {
-	this->_filePathStack = stack<string>();
-	this->_filePathStack.push(baseFilePath);
+	this->_baseFilePath = baseFilePath;
 }

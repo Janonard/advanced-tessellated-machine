@@ -17,51 +17,60 @@
  */
 #pragma once
 
-#include <vector>
-#include <stack>
 #include <string>
+#include <unordered_map>
+#include <vector>
 #include <memory>
 
-#include "System/Uncopyable.h"
+#include "System/Node.h"
 #include "Executable/ExecutableElement.h"
-#include "Assembler/AssemblerLine.h"
 
-class Assembler : public Uncopyable
+typedef std::unordered_map<std::string, NODE_INT_TYPE> SymbolMap;
+
+class AssemblerLine
 {
-	
 public: // methods
-	Assembler();
-	~Assembler() override;
+	AssemblerLine();
 	
-	bool assembleText();
+	bool assembleLine();
 	
-private: // methods
-	
-	bool assembleLine(std::string line, uint lineNumber);
+	bool linkLine(Memory* outMemory);
 	
 	void printErrorHeader();
 	
-public: // member access
+private: // methods
 	
-	const std::string& getText() const;
-	void setText(const std::string& text);
+	bool splitLineInWords();
 	
-	std::vector<std::shared_ptr<ExecutableElement>> getElements() const;
-	void resetElements();
+public: // property access
+	
+	const std::string& getRawLine() const;
+	void setRawLine(const std::string& rawLine);
+	
+	uint getLineNumber() const;
+	void setLineNumber(uint lineNumber);
+	
+	const std::string& getFilePath() const;
+	void setFilePath(const std::string& filePath);
 	
 	std::shared_ptr<SymbolMap> getSymbols() const;
+	void setSymbols(std::shared_ptr<SymbolMap> symbols);
 	
-	const std::string& getBaseFilePath() const;
-	void setBaseFilePath(std::string baseFilePath);
+	std::vector<std::shared_ptr<AssemblerLine>> getAdditionaLines() const;
+	void clearAdditionalLines();
 	
-private: // members
-	std::string _text;
+private: // properties
 	
-	std::vector<std::shared_ptr<AssemblerLine>> _lines;
+	std::string _rawLine;
 	
-	std::vector<std::shared_ptr<ExecutableElement>> _elements;
+	std::vector<std::string> _splitLine;
+	
+	uint _lineNumber;
+	
+	std::string _filePath;
 	
 	std::shared_ptr<SymbolMap> _symbols;
 	
-	std::string _baseFilePath;
+	std::vector<std::shared_ptr<AssemblerLine>> _additionalLines;
+	
 };
