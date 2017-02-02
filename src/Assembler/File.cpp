@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Assembler/Assembler.h"
+#include "Assembler/File.h"
 #include <iostream>
 
 using namespace std;
 
-Assembler::Assembler() :
+Assembler::File::File() :
 	_text(),
 	_lines(),
 	_elements(),
@@ -38,12 +38,12 @@ Assembler::Assembler() :
 	}
 }
 
-Assembler::~Assembler()
+Assembler::File::~File()
 {
 	this->_symbols.reset();
 }
 
-bool Assembler::assembleText()
+bool Assembler::File::assembleText()
 {
 	string currentLine = string();
 	uint currentLineNumber = 1;
@@ -73,13 +73,13 @@ bool Assembler::assembleText()
 	}
 }
 
-bool Assembler::assembleLine(string line, uint lineNumber)
+bool Assembler::File::assembleLine(string line, uint lineNumber)
 {
-	shared_ptr<AssemblerLine> newLine(nullptr);
+	shared_ptr<Assembler::Line> newLine(nullptr);
 	
 	try
 	{
-		newLine = make_shared<AssemblerLine>();
+		newLine = make_shared<Assembler::Line>();
 	}
 	catch (std::bad_alloc e)
 	{
@@ -98,7 +98,7 @@ bool Assembler::assembleLine(string line, uint lineNumber)
 	if (! newLine->assembleLine())
 		return false;
 	
-	for (shared_ptr<AssemblerLine> additionalLine : newLine->getAdditionaLines())
+	for (shared_ptr<Assembler::Line> additionalLine : newLine->getAdditionaLines())
 	{
 		this->_lines.push_back(additionalLine);
 	}
@@ -106,7 +106,7 @@ bool Assembler::assembleLine(string line, uint lineNumber)
 	return true;
 }
 
-void Assembler::printErrorHeader()
+void Assembler::File::printErrorHeader()
 {
 	if (this->_lines.size() > 0 && this->_lines.back().get() != nullptr)
 	{
@@ -118,37 +118,37 @@ void Assembler::printErrorHeader()
 	}
 }
 
-const std::string & Assembler::getText() const
+const std::string & Assembler::File::getText() const
 {
 	return this->_text;
 }
 
-void Assembler::setText(const std::string& text)
+void Assembler::File::setText(const std::string& text)
 {
 	this->_text = text;
 }
 
-vector<shared_ptr<ExecutableElement>> Assembler::getElements() const
+vector<shared_ptr<ExecutableElement>> Assembler::File::getElements() const
 {
 	return this->_elements;
 }
 
-std::shared_ptr<SymbolMap> Assembler::getSymbols() const
+std::shared_ptr<Assembler::SymbolMap> Assembler::File::getSymbols() const
 {
 	return this->_symbols;
 }
 
-void Assembler::resetElements()
+void Assembler::File::resetElements()
 {
 	this->_elements = vector<shared_ptr<ExecutableElement>>();
 }
 
-const std::string & Assembler::getBaseFilePath() const
+const std::string & Assembler::File::getBaseFilePath() const
 {
 	return this->_baseFilePath;
 }
 
-void Assembler::setBaseFilePath(std::string baseFilePath)
+void Assembler::File::setBaseFilePath(std::string baseFilePath)
 {
 	this->_baseFilePath = baseFilePath;
 }

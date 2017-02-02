@@ -1,6 +1,6 @@
 set(ASSEMBLER_SRCS
-	src/Assembler/Assembler.cpp
-	src/Assembler/Assembler.h
-	src/Assembler/AssemblerLine.cpp
-	src/Assembler/AssemblerLine.h
+	src/Assembler/File.cpp
+	src/Assembler/File.h
+	src/Assembler/Line.cpp
+	src/Assembler/Line.h
 )

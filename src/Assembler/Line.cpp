@@ -15,12 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Assembler/AssemblerLine.h"
+#include "Assembler/Line.h"
 #include <iostream>
 
 using namespace std;
 
-AssemblerLine::AssemblerLine() :
+Assembler::Line::Line() :
 	_rawLine(),
 	_splitLine(),
 	_lineNumber(0),
@@ -31,7 +31,7 @@ AssemblerLine::AssemblerLine() :
 	
 }
 
-bool AssemblerLine::assembleLine()
+bool Assembler::Line::assembleLine()
 {
 	if (!this->splitLineInWords())
 		return false;
@@ -45,19 +45,19 @@ bool AssemblerLine::assembleLine()
 	return true;
 }
 
-bool AssemblerLine::linkLine(Memory* outMemory)
+bool Assembler::Line::linkLine(Memory* outMemory)
 {
 	return true;
 }
 
-void AssemblerLine::printErrorHeader()
+void Assembler::Line::printErrorHeader()
 {
 	cerr << "ERROR while assembling file '" << this->getFilePath() << "'!" << endl;
 	cerr << "In line " << this->getLineNumber() << ":" << endl;
 	cerr << this->getRawLine() << endl;
 }
 
-bool AssemblerLine::splitLineInWords()
+bool Assembler::Line::splitLineInWords()
 {
 	this->_splitLine = vector<string>();
 	this->_splitLine.push_back("");
@@ -99,52 +99,52 @@ bool AssemblerLine::splitLineInWords()
 	return true;
 }
 
-const std::string & AssemblerLine::getRawLine() const
+const std::string & Assembler::Line::getRawLine() const
 {
 	return this->_rawLine;
 }
 
-void AssemblerLine::setRawLine(const std::string& rawLine)
+void Assembler::Line::setRawLine(const std::string& rawLine)
 {
 	this->_rawLine = rawLine;
 }
 
-uint AssemblerLine::getLineNumber() const
+uint Assembler::Line::getLineNumber() const
 {
 	return this->_lineNumber;
 }
 
-void AssemblerLine::setLineNumber(uint lineNumber)
+void Assembler::Line::setLineNumber(uint lineNumber)
 {
 	this->_lineNumber = lineNumber;
 }
 
-const std::string & AssemblerLine::getFilePath() const
+const std::string & Assembler::Line::getFilePath() const
 {
 	return this->_filePath;
 }
 
-void AssemblerLine::setFilePath(const std::string& filePath)
+void Assembler::Line::setFilePath(const std::string& filePath)
 {
 	this->_filePath = filePath;
 }
 
-std::shared_ptr<SymbolMap> AssemblerLine::getSymbols() const
+std::shared_ptr<Assembler::SymbolMap> Assembler::Line::getSymbols() const
 {
 	return this->_symbols;
 }
 
-void AssemblerLine::setSymbols(std::shared_ptr<SymbolMap> symbols)
+void Assembler::Line::setSymbols(std::shared_ptr<SymbolMap> symbols)
 {
 	this->_symbols = symbols;
 }
 
-vector<shared_ptr<AssemblerLine>> AssemblerLine::getAdditionaLines() const
+vector<shared_ptr<Assembler::Line>> Assembler::Line::getAdditionaLines() const
 {
 	return this->_additionalLines;
 }
 
-void AssemblerLine::clearAdditionalLines()
+void Assembler::Line::clearAdditionalLines()
 {
-	this->_additionalLines = vector<shared_ptr<AssemblerLine>>();
+	this->_additionalLines = vector<shared_ptr<Assembler::Line>>();
 }

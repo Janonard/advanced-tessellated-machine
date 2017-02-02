@@ -23,9 +23,10 @@
 #include <sstream>
 
 #include "System/Motherboard.h"
-#include "Assembler/Assembler.h"
+#include "Assembler/File.h"
 
 using namespace std;
+using namespace Assembler;
 
 Executable::Executable(const string& filePath) throw(LoadingException) :
 	_elements(),
@@ -178,13 +179,13 @@ void Executable::saveExecutable() const throw(LoadingException)
 
 void Executable::assembleFile(const string& fileText) throw(LoadingException)
 {
-	shared_ptr<Assembler> newAssembler = make_shared<Assembler>();
-	newAssembler->setBaseFilePath(this->_filePath);
-	newAssembler->setText(fileText);
+	shared_ptr<File> newAssFile = make_shared<File>();
+	newAssFile->setBaseFilePath(this->_filePath);
+	newAssFile->setText(fileText);
 	
-	if (newAssembler->assembleText())
+	if (newAssFile->assembleText())
 	{
-		this->_elements = newAssembler->getElements();
+		this->_elements = newAssFile->getElements();
 	}
 	else
 	{

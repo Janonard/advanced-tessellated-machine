@@ -24,44 +24,49 @@
 
 #include "System/Uncopyable.h"
 #include "Executable/ExecutableElement.h"
-#include "Assembler/AssemblerLine.h"
+#include "Assembler/Line.h"
 
-class Assembler : public Uncopyable
+namespace Assembler
 {
-	
-public: // methods
-	Assembler();
-	~Assembler() override;
-	
-	bool assembleText();
-	
-private: // methods
-	
-	bool assembleLine(std::string line, uint lineNumber);
-	
-	void printErrorHeader();
-	
-public: // member access
-	
-	const std::string& getText() const;
-	void setText(const std::string& text);
-	
-	std::vector<std::shared_ptr<ExecutableElement>> getElements() const;
-	void resetElements();
-	
-	std::shared_ptr<SymbolMap> getSymbols() const;
-	
-	const std::string& getBaseFilePath() const;
-	void setBaseFilePath(std::string baseFilePath);
-	
-private: // members
-	std::string _text;
-	
-	std::vector<std::shared_ptr<AssemblerLine>> _lines;
-	
-	std::vector<std::shared_ptr<ExecutableElement>> _elements;
-	
-	std::shared_ptr<SymbolMap> _symbols;
-	
-	std::string _baseFilePath;
-};
+
+	class File : public Uncopyable
+	{
+		
+	public: // methods
+		File();
+		~File() override;
+		
+		bool assembleText();
+		
+	private: // methods
+		
+		bool assembleLine(std::string line, uint lineNumber);
+		
+		void printErrorHeader();
+		
+	public: // member access
+		
+		const std::string& getText() const;
+		void setText(const std::string& text);
+		
+		std::vector<std::shared_ptr<ExecutableElement>> getElements() const;
+		void resetElements();
+		
+		std::shared_ptr<SymbolMap> getSymbols() const;
+		
+		const std::string& getBaseFilePath() const;
+		void setBaseFilePath(std::string baseFilePath);
+		
+	private: // members
+		std::string _text;
+		
+		std::vector<std::shared_ptr<Assembler::Line>> _lines;
+		
+		std::vector<std::shared_ptr<ExecutableElement>> _elements;
+		
+		std::shared_ptr<SymbolMap> _symbols;
+		
+		std::string _baseFilePath;
+	};
+
+}
