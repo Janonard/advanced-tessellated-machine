@@ -25,7 +25,8 @@ Assembler::File::File() :
 	_lines(),
 	_elements(),
 	_symbols(),
-	_baseFilePath()
+	_baseFilePath(),
+	_memorySize(0)
 {
 	try
 	{
@@ -75,8 +76,8 @@ bool Assembler::File::assembleText()
 
 bool Assembler::File::assembleLine(string line, uint lineNumber)
 {
-	shared_ptr<Assembler::Line> newLine(nullptr);
 	
+	shared_ptr<Assembler::Line> newLine(nullptr);
 	try
 	{
 		newLine = make_shared<Assembler::Line>();
@@ -92,6 +93,7 @@ bool Assembler::File::assembleLine(string line, uint lineNumber)
 	newLine->setLineNumber(lineNumber);
 	newLine->setFilePath(this->getBaseFilePath());
 	newLine->setSymbols(this->_symbols);
+	newLine->setMemoryLocation(this->_memorySize);
 	
 	this->_lines.push_back(newLine);
 	
@@ -102,6 +104,15 @@ bool Assembler::File::assembleLine(string line, uint lineNumber)
 	{
 		this->_lines.push_back(additionalLine);
 	}
+	
+	NODE_INT_TYPE newSize = this->_memorySize + newLine->getMemorySize();
+	if (newSize < this->_memorySize) // We hit the 64k limit
+	{
+		this->printErrorHeader();
+		cerr << "The binary is bigger than 64kB!" << endl;
+		return false;
+	}
+	this->_memorySize = newSize;
 	
 	return true;
 }

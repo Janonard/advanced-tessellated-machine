@@ -67,6 +67,8 @@ namespace Assembler
 		std::shared_ptr<SymbolMap> _symbols;
 		
 		std::string _baseFilePath;
+		
+		NODE_INT_TYPE _memorySize;
 	};
 
 }

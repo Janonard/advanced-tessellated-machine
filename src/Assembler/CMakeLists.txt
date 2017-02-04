@@ -1,6 +1,9 @@
 set(ASSEMBLER_SRCS
+	src/Assembler/Argument.cpp
+	src/Assembler/Argument.h
 	src/Assembler/File.cpp
 	src/Assembler/File.h
 	src/Assembler/Line.cpp
 	src/Assembler/Line.h
+	src/Assembler/Line_identifyArgument.cpp
 )

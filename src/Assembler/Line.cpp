@@ -17,8 +17,20 @@
  */
 #include "Assembler/Line.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
+using namespace Assembler;
+
+namespace Assembler
+{
+	static const char cComment = ';';
+	static const char cBracketOpen = '<';
+	static const char cBracketClose = '>';
+	static const char cSpace = ' ';
+	static const char cTab = '\t';
+	static const char cSymbolIdentifier = ':';
+}
 
 Assembler::Line::Line() :
 	_rawLine(),
@@ -26,7 +38,13 @@ Assembler::Line::Line() :
 	_lineNumber(0),
 	_filePath(),
 	_symbols(),
-	_additionalLines()
+	_additionalLines(),
+	_memoryLocation(0),
+	_memorySize(0),
+	_wordOffset(0),
+	_argument0(),
+	_argument1(),
+	_command(0)
 {
 	
 }
@@ -36,11 +54,17 @@ bool Assembler::Line::assembleLine()
 	if (!this->splitLineInWords())
 		return false;
 	
-	for (string word : this->_splitLine)
-	{
-		cout << word << "|";
-	}
-	cout << endl;
+	if (! this->identifySymbol())
+		return false;
+	
+	if (! this->identifyArgument(0))
+		return false;
+	
+	if (! this->identifyArgument(1))
+		return false;
+	
+	if (! this->identifyCommand())
+		return false;
 	
 	return true;
 }
@@ -65,21 +89,21 @@ bool Assembler::Line::splitLineInWords()
 	
 	for (char c : this->_rawLine)
 	{
-		if (c == ';')
+		if (c == cComment)
 		{
 			break;
 		}
 		
-		if ((not bracketing) and (c == '<'))
+		if ((not bracketing) and (c == cBracketOpen))
 		{
 			bracketing = true;
 		}
-		else if (bracketing and c == '>')
+		else if (bracketing and c == cBracketClose)
 		{
 			bracketing = false;
 		}
 		
-		if ((not bracketing) and (c == ' ' or c == '\t'))
+		if ((not bracketing) and (c == cSpace or c == cTab))
 		{
 			this->_splitLine.push_back(string());
 		}
@@ -96,6 +120,58 @@ bool Assembler::Line::splitLineInWords()
 		return false;
 	}
 	
+	return true;
+}
+
+bool Assembler::Line::identifySymbol()
+{
+	if (this->_splitLine.size() > 0 && this->_splitLine[0].back() == cSymbolIdentifier)
+	{
+		string symbolName = this->_splitLine[0];
+		symbolName.pop_back();
+		
+		if (! this->addSymbol(symbolName))
+			return false;
+		
+		this->_wordOffset = 1;
+	}
+	return true;
+}
+
+bool Assembler::Line::identifyCommand()
+{
+	return true;
+}
+
+bool Assembler::Line::addSymbol(std::string name)
+{
+	if (this->_symbols.get() != nullptr)
+	{
+		this->_symbols->emplace(name, this->_memoryLocation);
+		return true;
+	}
+	else
+	{
+		this->printErrorHeader();
+		cerr << "Internal error!" << endl;
+		return false;
+	}
+	return true;
+}
+
+bool Assembler::Line::codeToInt(const std::string& word, std::shared_ptr<Memory> memory)
+{
+	try
+	{
+		uint8_t code = stoi(word,nullptr,16);
+		memory->push_back(code);
+	}
+	catch (exception e)
+	{
+		this->printErrorHeader();
+		cerr << "Could not parse value!" << endl;
+		return false;
+	}
 	return true;
 }
 
@@ -147,4 +223,19 @@ vector<shared_ptr<Assembler::Line>> Assembler::Line::getAdditionaLines() const
 void Assembler::Line::clearAdditionalLines()
 {
 	this->_additionalLines = vector<shared_ptr<Assembler::Line>>();
+}
+
+uint16_t Assembler::Line::getMemoryLocation() const
+{
+	return this->_memoryLocation;
+}
+
+void Assembler::Line::setMemoryLocation(uint16_t memoryLocation)
+{
+	this->_memoryLocation = memoryLocation;
+}
+
+uint16_t Assembler::Line::getMemorySize() const
+{
+	return this->_memorySize;
 }

@@ -24,6 +24,7 @@
 
 #include "System/Node.h"
 #include "Executable/ExecutableElement.h"
+#include "Assembler/Argument.h"
 
 namespace Assembler
 {
@@ -45,6 +46,16 @@ namespace Assembler
 		
 		bool splitLineInWords();
 		
+		bool identifySymbol();
+		
+		bool identifyArgument(uint argumentNumber);
+		
+		bool identifyCommand();
+		
+		bool addSymbol(std::string name);
+		
+		bool codeToInt(const std::string& word, std::shared_ptr<Memory> memory);
+		
 	public: // property access
 		
 		const std::string& getRawLine() const;
@@ -62,6 +73,11 @@ namespace Assembler
 		std::vector<std::shared_ptr<Line>> getAdditionaLines() const;
 		void clearAdditionalLines();
 		
+		NODE_INT_TYPE getMemoryLocation() const;
+		void setMemoryLocation(NODE_INT_TYPE memoryLocation);
+		
+		NODE_INT_TYPE getMemorySize() const;
+		
 	private: // properties
 		
 		std::string _rawLine;
@@ -75,6 +91,29 @@ namespace Assembler
 		std::shared_ptr<SymbolMap> _symbols;
 		
 		std::vector<std::shared_ptr<Line>> _additionalLines;
+		
+		NODE_INT_TYPE _memoryLocation;
+		
+		NODE_INT_TYPE _memorySize;
+		
+		uint _wordOffset;
+		
+		Argument _argument0;
+		
+		Argument _argument1;
+		
+		uint8_t _command;
+		
+		const char cNumberIdentifier = '#';
+		const char cAddressIdentifier = '$';
+		const char cOpenBracket = '<';
+		const char cClosedBracket = '>';
+		const char cEightBitNumberLength = 3;
+		const char cSixteenBitNumberLength = 5;
+		
+		const std::array<std::string,4> vRegisters = {{"acc","bcc","ccc","null"}};
+		const std::array<std::string,3> vAddressRegisters = {{"$acc","$bcc","$ccc"}};
+		const std::array<std::string,8> vChannels = {{"up","upRight","right","downRight","down","downLeft","left","upLeft"}};
 		
 	};
 	
