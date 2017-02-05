@@ -1,6 +1,8 @@
 set(ASSEMBLER_SRCS
 	src/Assembler/Argument.cpp
 	src/Assembler/Argument.h
+	src/Assembler/Command.cpp
+	src/Assembler/Command.h
 	src/Assembler/File.cpp
 	src/Assembler/File.h
 	src/Assembler/Line.cpp

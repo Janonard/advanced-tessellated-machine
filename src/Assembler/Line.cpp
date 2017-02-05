@@ -22,16 +22,6 @@
 using namespace std;
 using namespace Assembler;
 
-namespace Assembler
-{
-	static const char cComment = ';';
-	static const char cBracketOpen = '<';
-	static const char cBracketClose = '>';
-	static const char cSpace = ' ';
-	static const char cTab = '\t';
-	static const char cSymbolIdentifier = ':';
-}
-
 Assembler::Line::Line() :
 	_rawLine(),
 	_splitLine(),
@@ -44,7 +34,7 @@ Assembler::Line::Line() :
 	_wordOffset(0),
 	_argument0(),
 	_argument1(),
-	_command(0)
+	_command()
 {
 	
 }
@@ -94,11 +84,11 @@ bool Assembler::Line::splitLineInWords()
 			break;
 		}
 		
-		if ((not bracketing) and (c == cBracketOpen))
+		if ((not bracketing) and (c == this->cOpenBracket))
 		{
 			bracketing = true;
 		}
-		else if (bracketing and c == cBracketClose)
+		else if (bracketing and c == this->cClosedBracket)
 		{
 			bracketing = false;
 		}
@@ -120,12 +110,17 @@ bool Assembler::Line::splitLineInWords()
 		return false;
 	}
 	
+	if (this->_splitLine.back() == string())
+	{
+		this->_splitLine.pop_back();
+	}
+	
 	return true;
 }
 
 bool Assembler::Line::identifySymbol()
 {
-	if (this->_splitLine.size() > 0 && this->_splitLine[0].back() == cSymbolIdentifier)
+	if (this->_splitLine.size() > 0 && this->_splitLine[0].back() == this->cSymbolIdentifier)
 	{
 		string symbolName = this->_splitLine[0];
 		symbolName.pop_back();
@@ -140,13 +135,84 @@ bool Assembler::Line::identifySymbol()
 
 bool Assembler::Line::identifyCommand()
 {
-	return true;
+	try
+	{
+		this->_command = Command();
+	}
+	catch (exception e)
+	{
+		this->printErrorHeader();
+		cerr << "Could not allocate memory!" << endl;
+		return false;
+	}
+	
+	if (this->_splitLine.size() > this->_wordOffset)
+	{
+		if (auto iter = find(this->vCommands.begin(), this->vCommands.end(), this->_splitLine[this->_wordOffset]) != this->vCommands.end())
+		{
+			this->_command.setType(CommandType(iter));
+			return true;
+		}
+		else
+		{
+			this->printErrorHeader();
+			cerr << "Unknown command!" << endl;
+			return false;
+		}
+	}
+	else
+	{
+		this->_command.setType(CommandType::None);
+		return true;
+	}
 }
 
 bool Assembler::Line::addSymbol(std::string name)
 {
 	if (this->_symbols.get() != nullptr)
 	{
+		if (name[0] == this->cNumberIdentifier)
+		{
+			this->printErrorHeader();
+			cerr << "A symbol may not start with '" << this->cNumberIdentifier << "'!" << endl;
+			return false;
+		}
+		
+		if (name[0] == this->cAddressIdentifier)
+		{
+			this->printErrorHeader();
+			cerr << "A symbol may not start with '" << this->cAddressIdentifier << "'!" << endl;
+			return false;
+		}
+		
+		if (name[0] == this->cOpenBracket)
+		{
+			this->printErrorHeader();
+			cerr << "A symbol may not start with '" << this->cOpenBracket << "'!" << endl;
+			return false;
+		}
+		
+		if (name[0] == this->cClosedBracket)
+		{
+			this->printErrorHeader();
+			cerr << "A symbol may not start with '" << this->cClosedBracket << "'!" << endl;
+			return false;
+		}
+		
+		if (find(this->vRegisters.begin(), this->vRegisters.end(), name) != this->vRegisters.end())
+		{
+			this->printErrorHeader();
+			cerr << "A symbol may not have the same name as a register!" << endl;
+			return false;
+		}
+		
+		if (find(this->vChannels.begin(), this->vChannels.end(), name) != this->vChannels.end())
+		{
+			this->printErrorHeader();
+			cerr << "A symbol may not have the same name as a channel!" << endl;
+			return false;
+		}
+		
 		this->_symbols->emplace(name, this->_memoryLocation);
 		return true;
 	}
@@ -154,22 +220,6 @@ bool Assembler::Line::addSymbol(std::string name)
 	{
 		this->printErrorHeader();
 		cerr << "Internal error!" << endl;
-		return false;
-	}
-	return true;
-}
-
-bool Assembler::Line::codeToInt(const std::string& word, std::shared_ptr<Memory> memory)
-{
-	try
-	{
-		uint8_t code = stoi(word,nullptr,16);
-		memory->push_back(code);
-	}
-	catch (exception e)
-	{
-		this->printErrorHeader();
-		cerr << "Could not parse value!" << endl;
 		return false;
 	}
 	return true;

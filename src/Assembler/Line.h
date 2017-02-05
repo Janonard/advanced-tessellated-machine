@@ -25,6 +25,7 @@
 #include "System/Node.h"
 #include "Executable/ExecutableElement.h"
 #include "Assembler/Argument.h"
+#include "Assembler/Command.h"
 
 namespace Assembler
 {
@@ -53,8 +54,6 @@ namespace Assembler
 		bool identifyCommand();
 		
 		bool addSymbol(std::string name);
-		
-		bool codeToInt(const std::string& word, std::shared_ptr<Memory> memory);
 		
 	public: // property access
 		
@@ -102,18 +101,22 @@ namespace Assembler
 		
 		Argument _argument1;
 		
-		uint8_t _command;
+		Command _command;
 		
 		const char cNumberIdentifier = '#';
 		const char cAddressIdentifier = '$';
 		const char cOpenBracket = '<';
 		const char cClosedBracket = '>';
+		const char cSpace = ' ';
+		const char cTab = '\t';
+		const char cSymbolIdentifier = ':';
 		const char cEightBitNumberLength = 3;
-		const char cSixteenBitNumberLength = 5;
+		const char cSixteenBitNumberLength = 5;const char cComment = ';';
 		
 		const std::array<std::string,4> vRegisters = {{"acc","bcc","ccc","null"}};
 		const std::array<std::string,3> vAddressRegisters = {{"$acc","$bcc","$ccc"}};
 		const std::array<std::string,8> vChannels = {{"up","upRight","right","downRight","down","downLeft","left","upLeft"}};
+		const std::array<std::string,33> vCommands = {{"halt", "splash", "move", "move8", "move16", "add", "add8", "add16", "negate", "bit_shift_l", "byte_shift_l", "bit_shift_r", "byte_shift_r", "swap", "compare", "jump", "jump_ops", "jump_opf", "jump_greater", "jump_lower", "jump_equal", "jump_nequal", "branch", "return", "dVerbose", "dSlow", "dCrash", "#define", "#var", "#position", "#space", "#include", "#binary"}};
 		
 	};
 	

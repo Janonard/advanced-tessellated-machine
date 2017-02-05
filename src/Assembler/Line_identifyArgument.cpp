@@ -22,9 +22,24 @@
 using namespace std;
 using namespace Assembler;
 
+inline bool codeToInt(Line* line, const std::string& word, std::shared_ptr<Memory> memory)
+{
+	try
+	{
+		uint8_t code = stoi(word,nullptr,16);
+		memory->push_back(code);
+	}
+	catch (exception e)
+	{
+		line->printErrorHeader();
+		cerr << "Could not parse value!" << endl;
+		return false;
+	}
+	return true;
+}
+
 bool Assembler::Line::identifyArgument(uint argumentNumber)
 {
-	
 	Argument* argPtr;
 	if (argumentNumber == 0)
 	{
@@ -71,7 +86,7 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		else if (word.size() == this->cEightBitNumberLength)
 		{
 			argPtr->setType(ArgumentType::Number8Bit);
-			if (!this->codeToInt(word.substr(1,2),memory))
+			if (!codeToInt(this,word.substr(1,2),memory))
 				return false;
 			this->_memorySize += 1;
 			return true;
@@ -80,9 +95,9 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		else if (word.size() == this->cSixteenBitNumberLength)
 		{
 			argPtr->setType(ArgumentType::Number16Bit);
-			if (!this->codeToInt(word.substr(1,2),memory))
+			if (!codeToInt(this,word.substr(1,2),memory))
 				return false;
-			if (!this->codeToInt(word.substr(3,2),memory))
+			if (!codeToInt(this,word.substr(3,2),memory))
 				return false;
 			this->_memorySize += 2;
 			return true;
@@ -106,9 +121,9 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		else if (word.size() == this->cSixteenBitNumberLength)
 		{
 			argPtr->setType(ArgumentType::Address);
-			if (!this->codeToInt(word.substr(1,2),memory))
+			if (!codeToInt(this,word.substr(1,2),memory))
 				return false;
-			if (!this->codeToInt(word.substr(3,2),memory))
+			if (!codeToInt(this,word.substr(3,2),memory))
 				return false;
 			this->_memorySize += 2;
 			return true;
