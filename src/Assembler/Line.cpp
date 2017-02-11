@@ -1,6 +1,6 @@
 /*
  * advanced tesselated machine
- * Copyright (C) 2015-2016 Janonard
+ * Copyright (C) 2017 Janonard
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,9 @@ bool Assembler::Line::assembleLine()
 	if (! this->identifyCommand())
 		return false;
 	
+	if (! this->identifyCombination())
+		return false;
+	
 	return true;
 }
 
@@ -66,6 +69,7 @@ bool Assembler::Line::linkLine(Memory* outMemory)
 
 void Assembler::Line::printErrorHeader()
 {
+	cerr << endl;
 	cerr << "ERROR while assembling file '" << this->getFilePath() << "'!" << endl;
 	cerr << "In line " << this->getLineNumber() << ":" << endl;
 	cerr << this->getRawLine() << endl;
@@ -125,7 +129,7 @@ bool Assembler::Line::identifySymbol()
 		string symbolName = this->_splitLine[0];
 		symbolName.pop_back();
 		
-		if (! this->addSymbol(symbolName))
+		if (! this->addSymbol(symbolName, this->_memoryLocation))
 			return false;
 		
 		this->_wordOffset = 1;
@@ -148,9 +152,10 @@ bool Assembler::Line::identifyCommand()
 	
 	if (this->_splitLine.size() > this->_wordOffset)
 	{
-		if (auto iter = find(this->vCommands.begin(), this->vCommands.end(), this->_splitLine[this->_wordOffset]) != this->vCommands.end())
+		auto iter = find(this->vCommands.begin(), this->vCommands.end(), this->_splitLine[this->_wordOffset]);
+		if (iter != this->vCommands.end())
 		{
-			this->_command.setType(CommandType(iter));
+			this->_command.setType(CommandType(iter-this->vCommands.begin()));
 			return true;
 		}
 		else
@@ -167,7 +172,7 @@ bool Assembler::Line::identifyCommand()
 	}
 }
 
-bool Assembler::Line::addSymbol(std::string name)
+bool Assembler::Line::addSymbol(std::string name, NODE_INT_TYPE location)
 {
 	if (this->_symbols.get() != nullptr)
 	{
@@ -213,7 +218,7 @@ bool Assembler::Line::addSymbol(std::string name)
 			return false;
 		}
 		
-		this->_symbols->emplace(name, this->_memoryLocation);
+		this->_symbols->emplace(name, location);
 		return true;
 	}
 	else
@@ -222,6 +227,66 @@ bool Assembler::Line::addSymbol(std::string name)
 		cerr << "Internal error!" << endl;
 		return false;
 	}
+	return true;
+}
+
+bool Assembler::Line::execDefine()
+{
+	if (this->_argument1.getCode().get() == nullptr or this->_argument1.getCode()->size() < 2)
+	{
+		this->printErrorHeader();
+		cerr << "Internal Error!" << endl;
+		return false;
+	}
+	NODE_INT_TYPE location = 0;
+	location = this->_argument1.getCode()->at(0) * 0x100 + this->_argument1.getCode()->at(1);
+	this->addSymbol(this->_argument0.getSymbolName(), location);
+	this->_argument0 = Argument();
+	this->_argument1 = Argument();
+	return true;
+}
+
+bool Assembler::Line::execPosition()
+{
+	if (this->_argument0.getCode().get() == nullptr or this->_argument0.getCode()->size() < 2)
+	{
+		this->printErrorHeader();
+		cerr << "Internal Error!" << endl;
+		return false;
+	}
+	
+	NODE_INT_TYPE finalLocation = this->_argument0.getCode()->at(0) * 0x100 + this->_argument0.getCode()->at(1);
+	NODE_INT_TYPE currentLocation = this->_memoryLocation;
+	shared_ptr<Memory> memory = this->_command.getCode();
+	while (currentLocation < finalLocation)
+	{
+		memory->push_back(0);
+		currentLocation++;
+	}
+	this->_argument0 = Argument();
+	this->_argument1 = Argument();
+	return true;
+}
+
+bool Assembler::Line::execSpace()
+{
+	if (this->_argument0.getCode().get() == nullptr or this->_argument0.getCode()->size() < 2)
+	{
+		this->printErrorHeader();
+		cerr << "Internal Error!" << endl;
+		return false;
+	}
+	
+	NODE_INT_TYPE finalLocation = this->_memoryLocation + this->_argument0.getCode()->at(0) * 0x100 + this->_argument0.getCode()->at(1);
+	NODE_INT_TYPE currentLocation = this->_memoryLocation;
+	shared_ptr<Memory> memory = this->_command.getCode();
+	while (currentLocation < finalLocation)
+	{
+		memory->push_back(0);
+		currentLocation++;
+	}
+	this->_argument0 = Argument();
+	this->_argument1 = Argument();
 	return true;
 }
 

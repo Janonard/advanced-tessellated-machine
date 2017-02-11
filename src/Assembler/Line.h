@@ -1,6 +1,6 @@
 /*
  * advanced tesselated machine
- * Copyright (C) 2015-2016 Janonard
+ * Copyright (C) 2017 Janonard
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,15 @@ namespace Assembler
 		
 		bool identifyCommand();
 		
-		bool addSymbol(std::string name);
+		bool identifyCombination();
+		
+		bool addSymbol(std::string name, NODE_INT_TYPE location);
+		
+		bool execDefine();
+		
+		bool execPosition();
+		
+		bool execSpace();
 		
 	public: // property access
 		

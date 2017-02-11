@@ -19,7 +19,7 @@
 
 // CPU Enums!
 
-enum Command
+enum CommandCodes
 {
 Halt								=0x00,
 Splash								=0x01,

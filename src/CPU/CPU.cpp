@@ -130,7 +130,7 @@ bool CPU::pretick()
 	if (this->_isRunning)
 	{
 		uint8_t currentByte = _memory->get8BitValue(this->_programPointer);
-		if (currentByte == uint8_t(Command::Move_Register_Channel))
+		if (currentByte == uint8_t(CommandCodes::Move_Register_Channel))
 		{
 			this->_programPointer++;
 			this->_hasPreticked = true;

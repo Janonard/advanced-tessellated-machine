@@ -1,6 +1,6 @@
 /*
  * advanced tesselated machine
- * Copyright (C) 2015-2016 Janonard
+ * Copyright (C) 2017 Janonard
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,11 +70,9 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 	
 	string word = this->_splitLine[this->_wordOffset + argumentNumber + 1];
 	
-	
-	
 	if (word[0] == this->cNumberIdentifier)
 	{
-		if (word[-1] == this->cNumberIdentifier)
+		if (word.back() == this->cNumberIdentifier)
 		{
 			argPtr->setType(ArgumentType::SymbolNumber);
 			word = word.substr(1);
@@ -111,10 +109,11 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 	}
 	else if (word[0] == this->cAddressIdentifier)
 	{
-		if (auto iter = std::find(this->vAddressRegisters.begin(), this->vAddressRegisters.end(), word) != this->vAddressRegisters.end())
+		auto iter = std::find(this->vAddressRegisters.begin(), this->vAddressRegisters.end(), word);
+		if (iter != this->vAddressRegisters.end())
 		{
 			argPtr->setType(ArgumentType::AddressRegister);
-			memory->push_back(iter);
+			memory->push_back(iter - this->vAddressRegisters.begin());
 			this->_memorySize += 1;
 			return true;
 		}
@@ -143,26 +142,32 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		argPtr->setSymbolName(word);
 		return true;
 	}
-	else if (auto iter = std::find(this->vRegisters.begin(), this->vRegisters.end(), word) != this->vRegisters.end())
+	else 
 	{
-		argPtr->setType(ArgumentType::Register);
-		memory->push_back(iter);
-		this->_memorySize += 1;
-		return true;
-	}
-	else if (auto iter = std::find(this->vChannels.begin(), this->vChannels.end(), word) != this->vChannels.end())
-	{
-		argPtr->setType(ArgumentType::Channel);
-		memory->push_back(iter);
-		this->_memorySize += 1;
-		return true;
-	}
-	else
-	{
-		argPtr->setType(ArgumentType::Symbol);
-		argPtr->setSymbolName(word);
-		this->_memorySize += 2;
-		return true;
+		auto registerIter = std::find(this->vRegisters.begin(), this->vRegisters.end(), word);
+		auto channelIter = std::find(this->vChannels.begin(), this->vChannels.end(), word);
+		
+		if (registerIter != this->vRegisters.end())
+		{
+			argPtr->setType(ArgumentType::Register);
+			memory->push_back(registerIter - this->vRegisters.begin());
+			this->_memorySize += 1;
+			return true;
+		}
+		else if (channelIter != this->vChannels.end())
+		{
+			argPtr->setType(ArgumentType::Channel);
+			memory->push_back(channelIter - this->vChannels.begin());
+			this->_memorySize += 1;
+			return true;
+		}
+		else
+		{
+			argPtr->setType(ArgumentType::Symbol);
+			argPtr->setSymbolName(word);
+			this->_memorySize += 2;
+			return true;
+		}
 	}
 	
 	return true;

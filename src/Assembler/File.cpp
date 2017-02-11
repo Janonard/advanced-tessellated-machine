@@ -1,6 +1,6 @@
 /*
  * advanced tesselated machine
- * Copyright (C) 2015-2016 Janonard
+ * Copyright (C) 2017 Janonard
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,13 +48,14 @@ bool Assembler::File::assembleText()
 {
 	string currentLine = string();
 	uint currentLineNumber = 1;
+	bool successfull = true;
 	
 	for (char c : this->_text)
 	{
 		if (c == '\n')
 		{
 			if (! this->assembleLine(currentLine, currentLineNumber))
-				return false;
+				successfull = false;
 			currentLine = string();
 			currentLineNumber++;
 		}
@@ -66,12 +67,10 @@ bool Assembler::File::assembleText()
 	
 	if (currentLine.size() > 0)
 	{
-		return this->assembleLine(currentLine, currentLineNumber);
+		successfull = this->assembleLine(currentLine, currentLineNumber);
 	}
-	else
-	{
-		return true;
-	}
+	
+	return successfull;
 }
 
 bool Assembler::File::assembleLine(string line, uint lineNumber)
@@ -125,6 +124,7 @@ void Assembler::File::printErrorHeader()
 	}
 	else
 	{
+		cerr << endl;
 		cerr << "ERROR while assembling!" << endl;
 	}
 }
