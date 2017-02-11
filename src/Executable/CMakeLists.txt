@@ -1,4 +1,5 @@
 set(EXECUTABLE_SRCS
+	src/Executable/Definitions.h
 	src/Executable/Executable.cpp
 	src/Executable/Executable.h
 	src/Executable/ExecutableElement.cpp

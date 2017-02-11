@@ -23,7 +23,7 @@
 #include <memory>
 
 #include "System/Node.h"
-#include "Executable/ExecutableElement.h"
+#include "Executable/Definitions.h"
 #include "Assembler/Argument.h"
 #include "Assembler/Command.h"
 
@@ -85,6 +85,12 @@ namespace Assembler
 		
 		NODE_INT_TYPE getMemorySize() const;
 		
+		const Argument& getArgument0() const;
+		
+		const Argument& getArgument1() const;
+		
+		const Command& getCommand() const;
+		
 	private: // properties
 		
 		std::string _rawLine;
@@ -124,7 +130,7 @@ namespace Assembler
 		const std::array<std::string,4> vRegisters = {{"acc","bcc","ccc","null"}};
 		const std::array<std::string,3> vAddressRegisters = {{"$acc","$bcc","$ccc"}};
 		const std::array<std::string,8> vChannels = {{"up","upRight","right","downRight","down","downLeft","left","upLeft"}};
-		const std::array<std::string,33> vCommands = {{"halt", "splash", "move", "move8", "move16", "add", "add8", "add16", "negate", "bit_shift_l", "byte_shift_l", "bit_shift_r", "byte_shift_r", "swap", "compare", "jump", "jump_ops", "jump_opf", "jump_greater", "jump_lower", "jump_equal", "jump_nequal", "branch", "return", "dVerbose", "dSlow", "dCrash", "#define", "#var", "#position", "#space", "#include", "#binary"}};
+		const std::array<std::string,34> vCommands = {{"halt", "splash", "move", "move8", "move16", "add", "add8", "add16", "negate", "bit_shift_l", "byte_shift_l", "bit_shift_r", "byte_shift_r", "swap", "compare", "jump", "jump_ops", "jump_opf", "jump_greater", "jump_lower", "jump_equal", "jump_nequal", "branch", "return", "dVerbose", "dSlow", "dCrash", "#define", "#var", "#position", "#space", "#include", "#binary", "NODE"}};
 		
 	};
 	

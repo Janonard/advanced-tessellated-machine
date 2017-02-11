@@ -17,40 +17,6 @@
  */
 #pragma once
 
-#include <memory>
+#include <vector>
 
-#include "Executable/Definitions.h"
-
-namespace Assembler
-{
-	
-	enum class ArgumentType
-	{
-		NoArgument, Number8Bit, Number16Bit, Register, Symbol, SymbolNumber, Address, AddressRegister, Channel, Filename
-	};
-	
-	class Argument
-	{
-	public: // methods
-		Argument();
-		
-		ArgumentType getType() const;
-		void setType(ArgumentType type);
-		
-		std::shared_ptr<Memory> getCode() const;
-		void setCode(std::shared_ptr<Memory> memory);
-		
-		const std::string& getSymbolName() const;
-		void setSymbolName(const std::string& symbolName);
-		
-	private: // properties
-		
-		ArgumentType _type;
-		
-		std::shared_ptr<Memory> _code;
-		
-		std::string _symbolName;
-		
-	};
-	
-}
+typedef std::vector<uint8_t> Memory;

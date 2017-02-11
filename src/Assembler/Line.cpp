@@ -354,3 +354,19 @@ uint16_t Assembler::Line::getMemorySize() const
 {
 	return this->_memorySize;
 }
+
+const Assembler::Argument & Assembler::Line::getArgument0() const
+{
+	return this->_argument0;
+}
+
+const Assembler::Argument & Assembler::Line::getArgument1() const
+{
+	return this->_argument1;
+}
+
+const Assembler::Command & Assembler::Line::getCommand() const
+{
+	return this->_command;
+}
+

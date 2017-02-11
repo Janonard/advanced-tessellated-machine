@@ -23,7 +23,6 @@
 #include <sstream>
 
 #include "System/Motherboard.h"
-#include "Assembler/File.h"
 
 using namespace std;
 using namespace Assembler;
@@ -179,16 +178,131 @@ void Executable::saveExecutable() const throw(LoadingException)
 
 void Executable::assembleFile(const string& fileText) throw(LoadingException)
 {
-	shared_ptr<File> newAssFile = make_shared<File>();
-	newAssFile->setBaseFilePath(this->_filePath);
-	newAssFile->setText(fileText);
+	string text = string(fileText);
+	string currentLine = string();
+	uint currentLineNumber = 1;
+	bool successfull = true;
 	
-	if (newAssFile->assembleText())
+	for (char c : text)
 	{
-		this->_elements = newAssFile->getElements();
+		if (c == '\n')
+		{
+			if (! this->assembleLine(currentLine, currentLineNumber))
+				successfull = false;
+			currentLine = string();
+			currentLineNumber++;
+		}
+		else
+		{
+			currentLine.push_back(c);
+		}
 	}
-	else
+	
+	if (currentLine.size() > 0)
+	{
+		successfull = this->assembleLine(currentLine, currentLineNumber);
+	}
+	
+	for (shared_ptr<ExecutableElement> element : this->_elements)
+	{
+		if (not element->linkLinesToMemory())
+		{
+			throw(LoadingException("Assembly failed"));
+		}
+	}
+	
+	if (not successfull)
 	{
 		throw(LoadingException("Assembly failed"));
 	}
+}
+
+bool Executable::assembleLine(const std::string& line, uint lineNumber)
+{
+	shared_ptr<Assembler::Line> newLine(nullptr);
+	try
+	{
+		newLine = make_shared<Assembler::Line>();
+	}
+	catch (std::bad_alloc e)
+	{
+		cerr << "ERROR while assembling!" << endl;
+		cerr << "Could not allocate new memory!" << endl;
+		return false;
+	}
+	
+	newLine->setRawLine(line);
+	newLine->setLineNumber(lineNumber);
+	if (this->_elements.size() > 0 and this->_elements.back().get() != nullptr)
+	{
+		newLine->setFilePath(this->_elements.back()->getBaseFilePath());
+		newLine->setSymbols(this->_elements.back()->getSymbols());
+		newLine->setMemoryLocation(this->_elements.back()->getNewLineLocation());
+	}
+	else
+	{
+		newLine->setFilePath(this->_filePath);
+		newLine->setSymbols(shared_ptr<SymbolMap>(nullptr));
+		newLine->setMemoryLocation(0);
+	}
+	
+	if (! newLine->assembleLine())
+		return false;
+	
+	// If the arguments were wrong, `newLine->assembleLine()` would have returned false.
+	// Therefore we don't need to check this.
+	if (newLine->getCommand().getType() == CommandType::NODE)
+	{
+		return this->addNewExecElement(newLine->getArgument0().getCode()->at(0));
+	}
+	
+	if (newLine->getCommand().getType() != CommandType::None)
+	{
+		if (this->_elements.size() > 0 and this->_elements.back().get() != nullptr)
+		{
+			this->_elements.back()->addLine(newLine);
+			
+			NODE_INT_TYPE oldNLL = this->_elements.back()->getNewLineLocation();
+			NODE_INT_TYPE newNLL = oldNLL + newLine->getMemorySize();
+			if (newNLL < oldNLL) // Which means that we hit the 64k limit
+			{
+				newLine->printErrorHeader();
+				cerr << "The image size hit the limit of 64k!" << endl;
+				return false;
+			}
+			this->_elements.back()->setNewLineLocation(newNLL);
+			
+			return true;
+		}
+		else
+		{
+			newLine->printErrorHeader();
+			cerr << "Current target node is not specified!" << endl;
+			cerr << "Maybe you forgot to use `NODE`?" << endl;
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Executable::addNewExecElement(uint8_t code)
+{
+	shared_ptr<ExecutableElement> newExecElement;
+	try
+	{
+		newExecElement = make_shared<ExecutableElement>();
+	}
+	catch (bad_alloc e)
+	{
+		cerr << "ERROR while assembling!" << endl;
+		cerr << "Could not allocate new memory!" << endl;
+		return false;
+	}
+	
+	newExecElement->setBaseFilePath(this->_filePath);
+	newExecElement->setX(code / 0x10);
+	newExecElement->setY(code % 0x10);
+	
+	this->_elements.push_back(newExecElement);
+	return true;
 }

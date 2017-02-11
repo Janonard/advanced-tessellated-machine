@@ -20,8 +20,8 @@
 #include <vector>
 
 #include "System/Node.h"
-
-typedef std::vector<uint8_t> Memory;
+#include "Assembler/Line.h"
+#include "Executable/Definitions.h"
 
 /*
  * This contains the memory and the coordinates of an executable element.
@@ -49,6 +49,26 @@ public:
 		{return this->_y;}
 	void setY(int y)
 		{this->_y = y;}
+		
+	void addLine(std::shared_ptr<Assembler::Line> newLine)
+		{this->_lines.push_back(newLine);};
+	
+	std::shared_ptr<Assembler::SymbolMap> getSymbols() const
+		{return this->_symbols;};
+		
+	const std::string& getBaseFilePath() const
+		{return this->_baseFilePath;};
+		
+	void setBaseFilePath(std::string baseFilePath)
+		{this->_baseFilePath = baseFilePath;};
+		
+	NODE_INT_TYPE getNewLineLocation() const
+		{return this->_newLineLocation;}
+		
+	void setNewLineLocation(NODE_INT_TYPE newNLL)
+		{this->_newLineLocation = newNLL;};
+		
+	bool linkLinesToMemory();
 	
 	/*
 	 * Returns a copy of the whole memory.
@@ -99,5 +119,13 @@ private:
 	 * Our memory
 	 */
 	Memory _memory;
+	
+	std::vector<std::shared_ptr<Assembler::Line>> _lines;
+		
+	std::shared_ptr<Assembler::SymbolMap> _symbols;
+		
+	std::string _baseFilePath;
+		
+	NODE_INT_TYPE _newLineLocation;
 	
 };

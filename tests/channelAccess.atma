@@ -16,7 +16,7 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 
-NODE 1 1
+NODE #11
 
 move #FFFF acc
 
@@ -42,7 +42,7 @@ halt
 
 crash: dCrash
 
-NODE 2 1
+NODE #21
 
 pull0: move left acc
 jump_opf pull0
@@ -56,14 +56,14 @@ move acc downLeft
 
 halt
 
-NODE 2 2
+NODE #22
 
 pull0: move upLeft acc
 jump_opf pull0
 move acc upLeft
 halt
 
-NODE 1 2
+NODE #12
 
 pull0: move up acc
 jump_opf pull0

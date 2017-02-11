@@ -18,12 +18,24 @@
 #include "Executable/ExecutableElement.h"
 #include <iostream>
 
+using namespace std;
+
 ExecutableElement::ExecutableElement() :
 	_x(0),
 	_y(0),
-	_memory()
+	_memory(),
+	_lines(),
+	_symbols(),
+	_baseFilePath(),
+	_newLineLocation(0)
 {
 	
+}
+
+bool ExecutableElement::linkLinesToMemory()
+{
+	this->_memory.push_back(0);
+	return true;
 }
 
 void ExecutableElement::setMemory(std::string memoryFileText)

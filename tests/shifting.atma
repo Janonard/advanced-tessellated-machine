@@ -16,7 +16,7 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 
-NODE 1 1
+NODE #11
 
 move #000F acc
 move #0F00 bcc

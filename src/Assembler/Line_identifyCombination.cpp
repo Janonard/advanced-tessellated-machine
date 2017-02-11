@@ -250,6 +250,11 @@ bool Assembler::Line::identifyCombination()
 			return this->execSpace();
 		}
 		else
+		if (this->_command.getType() == CommandType::NODE && this->_argument0.getType() == ArgumentType::Number8Bit && this->_argument1.getType() == ArgumentType::NoArgument)
+		{
+			return true; // the executable will care about this!
+		}
+		else
 			COMBI_ERROR()
 	}
 	return true;
