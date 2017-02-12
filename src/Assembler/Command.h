@@ -37,13 +37,14 @@ namespace Assembler
 		CommandType getType() const;
 		void setType(CommandType type);
 		
-		std::shared_ptr<Memory> getCode() const;
-		void setCode(std::shared_ptr<Memory> code);
+		const Memory& getCode() const;
+		Memory* getCodePointer();
+		void setCode(Memory code);
 		
 	private: // properties
 		CommandType _type;
 		
-		std::shared_ptr<Memory> _code;
+		Memory _code;
 	};
 	
 }

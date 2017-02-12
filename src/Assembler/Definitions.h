@@ -15,38 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "Assembler/Command.h"
+#pragma once
 
-using namespace std;
-using namespace Assembler;
+#include <unordered_map>
+#include <string>
+#include "System/Node.h"
 
-Assembler::Command::Command() :
-	_type(CommandType::Halt),
-	_code()
+namespace Assembler
 {
-}
-
-Assembler::CommandType Assembler::Command::getType() const
-{
-	return this->_type;
-}
-
-void Assembler::Command::setType(Assembler::CommandType type)
-{
-	this->_type = type;
-}
-
-const Memory& Assembler::Command::getCode() const
-{
-	return this->_code;
-}
-
-Memory * Assembler::Command::getCodePointer()
-{
-	return &this->_code;
-}
-
-void Assembler::Command::setCode(Memory code)
-{
-	this->_code = code;
+	typedef std::unordered_map<std::string, NODE_INT_TYPE> SymbolMap;
 }

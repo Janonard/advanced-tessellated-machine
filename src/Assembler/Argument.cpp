@@ -36,12 +36,17 @@ void Assembler::Argument::setType(Assembler::ArgumentType type)
 	this->_type = type;
 }
 
-std::shared_ptr<Memory> Assembler::Argument::getCode() const
+const Memory& Assembler::Argument::getCode() const
 {
 	return this->_code;
 }
 
-void Assembler::Argument::setCode(std::shared_ptr<Memory> code)
+Memory * Assembler::Argument::getCodePointer()
+{
+	return &this->_code;
+}
+
+void Assembler::Argument::setCode(const Memory& code)
 {
 	this->_code = code;
 }
@@ -54,4 +59,22 @@ const std::string & Assembler::Argument::getSymbolName() const
 void Assembler::Argument::setSymbolName(const std::string& symbolName)
 {
 	this->_symbolName = symbolName;
+}
+
+void Assembler::Argument::solveSymbols(std::shared_ptr<SymbolMap> symbols) throw(std::out_of_range)
+{
+	if (this->_type == ArgumentType::Symbol or this->_type == ArgumentType::SymbolNumber)
+	{
+		NODE_INT_TYPE location;
+		try
+		{
+			location = symbols->at(this->_symbolName);
+		}
+		catch (std::out_of_range e)
+		{
+			throw(e);
+		}
+		this->_code.push_back(location / 0x100);
+		this->_code.push_back(location % 0x100);
+	}
 }

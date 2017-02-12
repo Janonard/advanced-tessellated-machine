@@ -20,6 +20,7 @@
 #include <memory>
 
 #include "Executable/Definitions.h"
+#include "Assembler/Definitions.h"
 
 namespace Assembler
 {
@@ -37,17 +38,20 @@ namespace Assembler
 		ArgumentType getType() const;
 		void setType(ArgumentType type);
 		
-		std::shared_ptr<Memory> getCode() const;
-		void setCode(std::shared_ptr<Memory> memory);
+		const Memory& getCode() const;
+		Memory* getCodePointer();
+		void setCode(const Memory& memory);
 		
 		const std::string& getSymbolName() const;
 		void setSymbolName(const std::string& symbolName);
+		
+		void solveSymbols(std::shared_ptr<SymbolMap> symbols) throw(std::out_of_range);
 		
 	private: // properties
 		
 		ArgumentType _type;
 		
-		std::shared_ptr<Memory> _code;
+		Memory _code;
 		
 		std::string _symbolName;
 		

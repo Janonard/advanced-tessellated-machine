@@ -29,12 +29,23 @@ ExecutableElement::ExecutableElement() :
 	_baseFilePath(),
 	_newLineLocation(0)
 {
-	
+	try
+	{
+		this->_symbols = make_shared<Assembler::SymbolMap>();
+	}
+	catch (bad_alloc e)
+	{
+		cerr << "Could not allocate new memory!" << endl;
+	}
 }
 
 bool ExecutableElement::linkLinesToMemory()
 {
-	this->_memory.push_back(0);
+	for (shared_ptr<Assembler::Line> line : this->_lines)
+	{
+		if (not line->linkLine(this->_memory))
+			return false;
+	}
 	return true;
 }
 

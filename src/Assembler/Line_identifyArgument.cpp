@@ -22,12 +22,12 @@
 using namespace std;
 using namespace Assembler;
 
-inline bool codeToInt(Line* line, const std::string& word, std::shared_ptr<Memory> memory)
+inline bool codeToInt(Line* line, const std::string& word, Memory& memory)
 {
 	try
 	{
 		uint8_t code = stoi(word,nullptr,16);
-		memory->push_back(code);
+		memory.push_back(code);
 	}
 	catch (exception e)
 	{
@@ -52,18 +52,7 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		argPtr = &(this->_argument1);
 	}
 	
-	shared_ptr<Memory> memory(nullptr);
-	try
-	{
-		memory = make_shared<Memory>();
-	}
-	catch (exception e)
-	{
-		this->printErrorHeader();
-		cerr << "Could not allocate memory!" << endl;
-		return false;
-	}
-	argPtr->setCode(memory);
+	Memory memory = Memory();
 	
 	if (this->_splitLine.size() <= this->_wordOffset + argumentNumber +1)
 		return true;
@@ -79,7 +68,6 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			word.pop_back();
 			argPtr->setSymbolName(word);
 			this->_memorySize += 2;
-			return true;
 		}
 		else if (word.size() == this->cEightBitNumberLength)
 		{
@@ -87,7 +75,6 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			if (!codeToInt(this,word.substr(1,2),memory))
 				return false;
 			this->_memorySize += 1;
-			return true;
 			
 		}
 		else if (word.size() == this->cSixteenBitNumberLength)
@@ -98,7 +85,6 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			if (!codeToInt(this,word.substr(3,2),memory))
 				return false;
 			this->_memorySize += 2;
-			return true;
 		}
 		else
 		{
@@ -113,9 +99,8 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		if (iter != this->vAddressRegisters.end())
 		{
 			argPtr->setType(ArgumentType::AddressRegister);
-			memory->push_back(iter - this->vAddressRegisters.begin());
+			memory.push_back(iter - this->vAddressRegisters.begin());
 			this->_memorySize += 1;
-			return true;
 		}
 		else if (word.size() == this->cSixteenBitNumberLength)
 		{
@@ -125,7 +110,6 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			if (!codeToInt(this,word.substr(3,2),memory))
 				return false;
 			this->_memorySize += 2;
-			return true;
 		}
 		else
 		{
@@ -140,7 +124,6 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		word.pop_back();
 		word = word.substr(1);
 		argPtr->setSymbolName(word);
-		return true;
 	}
 	else 
 	{
@@ -150,25 +133,23 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		if (registerIter != this->vRegisters.end())
 		{
 			argPtr->setType(ArgumentType::Register);
-			memory->push_back(registerIter - this->vRegisters.begin());
+			memory.push_back(registerIter - this->vRegisters.begin());
 			this->_memorySize += 1;
-			return true;
 		}
 		else if (channelIter != this->vChannels.end())
 		{
 			argPtr->setType(ArgumentType::Channel);
-			memory->push_back(channelIter - this->vChannels.begin());
+			memory.push_back(channelIter - this->vChannels.begin());
 			this->_memorySize += 1;
-			return true;
 		}
 		else
 		{
 			argPtr->setType(ArgumentType::Symbol);
 			argPtr->setSymbolName(word);
 			this->_memorySize += 2;
-			return true;
 		}
 	}
 	
+	argPtr->setCode(memory);
 	return true;
 }

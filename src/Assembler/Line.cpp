@@ -62,8 +62,35 @@ bool Assembler::Line::assembleLine()
 	return true;
 }
 
-bool Assembler::Line::linkLine(Memory* outMemory)
+bool Assembler::Line::linkLine(Memory& outMemory)
 {
+	try
+	{
+		this->_argument0.solveSymbols(this->_symbols);
+		this->_argument1.solveSymbols(this->_symbols);
+	}
+	catch (std::out_of_range e)
+	{
+		this->printErrorHeader();
+		cerr << "Referenced symbol could not be found!" << endl;
+		return false;
+	}
+	
+	for (uint8_t character : this->_command.getCode())
+	{
+		outMemory.push_back(character);
+	}
+	
+	for (uint8_t character : this->_argument0.getCode())
+	{
+		outMemory.push_back(character);
+	}
+	
+	for (uint8_t character : this->_argument1.getCode())
+	{
+		outMemory.push_back(character);
+	}
+	
 	return true;
 }
 
@@ -232,32 +259,33 @@ bool Assembler::Line::addSymbol(std::string name, NODE_INT_TYPE location)
 
 bool Assembler::Line::execDefine()
 {
-	if (this->_argument1.getCode().get() == nullptr or this->_argument1.getCode()->size() < 2)
+	if (this->_argument1.getCode().size() < 2)
 	{
 		this->printErrorHeader();
 		cerr << "Internal Error!" << endl;
 		return false;
 	}
 	NODE_INT_TYPE location = 0;
-	location = this->_argument1.getCode()->at(0) * 0x100 + this->_argument1.getCode()->at(1);
+	location = this->_argument1.getCode()[0] * 0x100 + this->_argument1.getCode()[1];
 	this->addSymbol(this->_argument0.getSymbolName(), location);
 	this->_argument0 = Argument();
 	this->_argument1 = Argument();
+	this->_memorySize = 0;
 	return true;
 }
 
 bool Assembler::Line::execPosition()
 {
-	if (this->_argument0.getCode().get() == nullptr or this->_argument0.getCode()->size() < 2)
+	if (this->_argument0.getCode().size() < 2)
 	{
 		this->printErrorHeader();
 		cerr << "Internal Error!" << endl;
 		return false;
 	}
 	
-	NODE_INT_TYPE finalLocation = this->_argument0.getCode()->at(0) * 0x100 + this->_argument0.getCode()->at(1);
+	NODE_INT_TYPE finalLocation = this->_argument0.getCode()[0] * 0x100 + this->_argument0.getCode()[1];
 	NODE_INT_TYPE currentLocation = this->_memoryLocation;
-	shared_ptr<Memory> memory = this->_command.getCode();
+	Memory* memory = this->_command.getCodePointer();
 	while (currentLocation < finalLocation)
 	{
 		memory->push_back(0);
@@ -265,21 +293,22 @@ bool Assembler::Line::execPosition()
 	}
 	this->_argument0 = Argument();
 	this->_argument1 = Argument();
+	this->_memorySize = memory->size();
 	return true;
 }
 
 bool Assembler::Line::execSpace()
 {
-	if (this->_argument0.getCode().get() == nullptr or this->_argument0.getCode()->size() < 2)
+	if (this->_argument0.getCode().size() < 2)
 	{
 		this->printErrorHeader();
 		cerr << "Internal Error!" << endl;
 		return false;
 	}
 	
-	NODE_INT_TYPE finalLocation = this->_memoryLocation + this->_argument0.getCode()->at(0) * 0x100 + this->_argument0.getCode()->at(1);
+	NODE_INT_TYPE finalLocation = this->_memoryLocation + this->_argument0.getCode()[0] * 0x100 + this->_argument0.getCode()[1];
 	NODE_INT_TYPE currentLocation = this->_memoryLocation;
-	shared_ptr<Memory> memory = this->_command.getCode();
+	Memory* memory = this->_command.getCodePointer();
 	while (currentLocation < finalLocation)
 	{
 		memory->push_back(0);
@@ -287,6 +316,7 @@ bool Assembler::Line::execSpace()
 	}
 	this->_argument0 = Argument();
 	this->_argument1 = Argument();
+	this->_memorySize = memory->size();
 	return true;
 }
 

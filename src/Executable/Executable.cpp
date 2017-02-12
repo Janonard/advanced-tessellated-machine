@@ -253,7 +253,7 @@ bool Executable::assembleLine(const std::string& line, uint lineNumber)
 	// Therefore we don't need to check this.
 	if (newLine->getCommand().getType() == CommandType::NODE)
 	{
-		return this->addNewExecElement(newLine->getArgument0().getCode()->at(0));
+		return this->addNewExecElement(newLine->getArgument0().getCode()[0]);
 	}
 	
 	if (newLine->getCommand().getType() != CommandType::None)

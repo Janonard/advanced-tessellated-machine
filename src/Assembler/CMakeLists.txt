@@ -3,6 +3,7 @@ set(ASSEMBLER_SRCS
 	src/Assembler/Argument.h
 	src/Assembler/Command.cpp
 	src/Assembler/Command.h
+	src/Assembler/Definitions.h
 	src/Assembler/Line.cpp
 	src/Assembler/Line.h
 	src/Assembler/Line_identifyArgument.cpp

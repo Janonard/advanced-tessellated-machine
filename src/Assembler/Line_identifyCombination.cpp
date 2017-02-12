@@ -25,11 +25,11 @@ using namespace Assembler;
 
 #define COMMAND_COMBI(ARGUMENT0, ARGUMENT1, CODE) \
 	if (this->_argument0.getType() == ARGUMENT0 && this->_argument1.getType() == ARGUMENT1) \
-	{ this->_command.getCode()->push_back(uint8_t(CODE)); return true; }
+	{ this->_command.getCodePointer()->push_back(uint8_t(CODE)); this->_memorySize++; return true; }
 
 #define SINGLE_COMBI_COMMAND(COMMAND, ARGUMENT0, ARGUMENT1, CODE) \
 	if (this->_command.getType() == COMMAND && this->_argument0.getType() == ARGUMENT0 && this->_argument1.getType() == ARGUMENT1) \
-	{ this->_command.getCode()->push_back(uint8_t(CODE)); return true; }
+	{ this->_command.getCodePointer()->push_back(uint8_t(CODE)); this->_memorySize++; return true; }
 	
 #define COMBI_ERROR() \
 	{ this->printErrorHeader(); cerr << "Unsupported command/argument combination!" << endl; return false; }
@@ -108,6 +108,8 @@ bool Assembler::Line::identifyCombination()
 		{
 				COMMAND_COMBI(ArgumentType::Address,			ArgumentType::Register,			CommandCodes::Add_Address_Register_8_bit)
 			else
+				COMMAND_COMBI(ArgumentType::Symbol,			ArgumentType::Register,			CommandCodes::Add_Address_Register_8_bit)
+			else
 				COMMAND_COMBI(ArgumentType::AddressRegister,	ArgumentType::Register,			CommandCodes::Add_RegAddress_Register_8_bit)
 			else
 				COMBI_ERROR()
@@ -116,6 +118,8 @@ bool Assembler::Line::identifyCombination()
 		if (this->_command.getType() == CommandType::Add16)
 		{
 				COMMAND_COMBI(ArgumentType::Address,			ArgumentType::Register,			CommandCodes::Add_Address_Register_16_bit)
+			else
+				COMMAND_COMBI(ArgumentType::Symbol,			ArgumentType::Register,			CommandCodes::Add_Address_Register_16_bit)
 			else
 				COMMAND_COMBI(ArgumentType::AddressRegister,	ArgumentType::Register,			CommandCodes::Add_RegAddress_Register_16_bit)
 			else
@@ -196,7 +200,13 @@ bool Assembler::Line::identifyCombination()
 		else
 			SINGLE_COMBI_COMMAND(CommandType::Halt,			ArgumentType::NoArgument,	ArgumentType::NoArgument,	CommandCodes::Halt)
 		else
-			SINGLE_COMBI_COMMAND(CommandType::Splash,		ArgumentType::NoArgument,	ArgumentType::NoArgument,	CommandCodes::Splash)
+			//SINGLE_COMBI_COMMAND(CommandType::Splash,		ArgumentType::NoArgument,	ArgumentType::NoArgument,	CommandCodes::Splash)
+			if (this->_command.getType() == CommandType::Splash && this->_argument0.getType() == ArgumentType::NoArgument && this->_argument1.getType() == ArgumentType::NoArgument)
+			{
+				//cout << this->_memoryLocation<< endl;
+				 this->_command.getCodePointer()->push_back(uint8_t(CommandCodes::Splash));
+				 return true; 
+			}
 		else
 			SINGLE_COMBI_COMMAND(CommandType::Negate,		ArgumentType::Register,		ArgumentType::NoArgument,	CommandCodes::Negate_Register)
 		else

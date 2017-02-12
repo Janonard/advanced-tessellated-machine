@@ -1,0 +1,12 @@
+NODE #11
+
+dVerbose #01
+move #FF acc
+move #FFFF bcc
+move8 $0101 acc
+move16 $0101 bcc
+jump $0100
+
+#position $0101
+splash
+halt
