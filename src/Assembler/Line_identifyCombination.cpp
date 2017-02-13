@@ -200,13 +200,7 @@ bool Assembler::Line::identifyCombination()
 		else
 			SINGLE_COMBI_COMMAND(CommandType::Halt,			ArgumentType::NoArgument,	ArgumentType::NoArgument,	CommandCodes::Halt)
 		else
-			//SINGLE_COMBI_COMMAND(CommandType::Splash,		ArgumentType::NoArgument,	ArgumentType::NoArgument,	CommandCodes::Splash)
-			if (this->_command.getType() == CommandType::Splash && this->_argument0.getType() == ArgumentType::NoArgument && this->_argument1.getType() == ArgumentType::NoArgument)
-			{
-				//cout << this->_memoryLocation<< endl;
-				 this->_command.getCodePointer()->push_back(uint8_t(CommandCodes::Splash));
-				 return true; 
-			}
+			SINGLE_COMBI_COMMAND(CommandType::Splash,		ArgumentType::NoArgument,	ArgumentType::NoArgument,	CommandCodes::Splash)
 		else
 			SINGLE_COMBI_COMMAND(CommandType::Negate,		ArgumentType::Register,		ArgumentType::NoArgument,	CommandCodes::Negate_Register)
 		else
@@ -260,7 +254,17 @@ bool Assembler::Line::identifyCombination()
 			return this->execSpace();
 		}
 		else
+		if (this->_command.getType() == CommandType::MBinary && this->_argument0.getType() == ArgumentType::Filename && this->_argument1.getType() == ArgumentType::NoArgument)
+		{
+			return this->execBinary();
+		}
+		else
 		if (this->_command.getType() == CommandType::NODE && this->_argument0.getType() == ArgumentType::Number8Bit && this->_argument1.getType() == ArgumentType::NoArgument)
+		{
+			return true; // the executable will care about this!
+		}
+		else
+		if (this->_command.getType() == CommandType::MInclude && this->_argument0.getType() == ArgumentType::Filename && this->_argument1.getType() == ArgumentType::NoArgument)
 		{
 			return true; // the executable will care about this!
 		}

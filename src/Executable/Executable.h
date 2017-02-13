@@ -83,9 +83,11 @@ private: // methods
 	
 	void assembleFile(const std::string& fileText) throw(LoadingException);
 	
-	bool assembleLine(const std::string& line, uint lineNumber);
+	bool assembleLine(const std::string& line, uint lineNumber, std::string* outIncludedLine);
 	
 	bool addNewExecElement(uint8_t code);
+	
+	bool execInclude(std::shared_ptr<Assembler::Line> line, std::string* outIncludedCode);
 	
 private: // properties
 	

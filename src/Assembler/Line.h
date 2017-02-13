@@ -60,6 +60,8 @@ namespace Assembler
 		
 		bool execSpace();
 		
+		bool execBinary();
+		
 	public: // property access
 		
 		const std::string& getRawLine() const;

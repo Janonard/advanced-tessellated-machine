@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <boost/filesystem.hpp>
 
 #include "System/Motherboard.h"
 
@@ -183,24 +184,40 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 	uint currentLineNumber = 1;
 	bool successfull = true;
 	
-	for (char c : text)
+	if (text.back() != 4) // 4 is the ASCII character for end-of-file
+		text.push_back(4);
+	
+	while (text.size() > 0)
 	{
-		if (c == '\n')
+		if (text[0] == '\n' or text[0] == 4)
 		{
-			if (! this->assembleLine(currentLine, currentLineNumber))
+			string includedCode = string("");
+			if (! this->assembleLine(currentLine, currentLineNumber, &includedCode))
 				successfull = false;
+			if (includedCode.size() > 0)
+			{
+				text = includedCode.append(text);
+			}
 			currentLine = string();
 			currentLineNumber++;
+			
+			if (text[0] == 4)
+			{
+				if (! this->_elements.back()->closeIncludedFile())
+				{
+					cerr << "ERROR while assembling!" << endl;
+					cerr << "The source text contains more end-of-file characters (0x04)" << endl;
+					cerr << "than included files!" << endl;
+					throw(LoadingException("Assembly failed"));
+				}
+			}
 		}
 		else
 		{
-			currentLine.push_back(c);
+			currentLine.push_back(text[0]);
 		}
-	}
-	
-	if (currentLine.size() > 0)
-	{
-		successfull = this->assembleLine(currentLine, currentLineNumber);
+		
+		text.erase(0,1);
 	}
 	
 	for (shared_ptr<ExecutableElement> element : this->_elements)
@@ -217,7 +234,7 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 	}
 }
 
-bool Executable::assembleLine(const std::string& line, uint lineNumber)
+bool Executable::assembleLine(const std::string& line, uint lineNumber, string* outIncludedCode)
 {
 	shared_ptr<Assembler::Line> newLine(nullptr);
 	try
@@ -235,7 +252,7 @@ bool Executable::assembleLine(const std::string& line, uint lineNumber)
 	newLine->setLineNumber(lineNumber);
 	if (this->_elements.size() > 0 and this->_elements.back().get() != nullptr)
 	{
-		newLine->setFilePath(this->_elements.back()->getBaseFilePath());
+		newLine->setFilePath(this->_elements.back()->getCurrentFilePath());
 		newLine->setSymbols(this->_elements.back()->getSymbols());
 		newLine->setMemoryLocation(this->_elements.back()->getNewLineLocation());
 	}
@@ -254,6 +271,11 @@ bool Executable::assembleLine(const std::string& line, uint lineNumber)
 	if (newLine->getCommand().getType() == CommandType::NODE)
 	{
 		return this->addNewExecElement(newLine->getArgument0().getCode()[0]);
+	}
+	else
+	if (newLine->getCommand().getType() == CommandType::MInclude)
+	{
+		return execInclude(newLine, outIncludedCode);
 	}
 	
 	if (newLine->getCommand().getType() != CommandType::None)
@@ -304,5 +326,47 @@ bool Executable::addNewExecElement(uint8_t code)
 	newExecElement->setY(code % 0x10);
 	
 	this->_elements.push_back(newExecElement);
+	return true;
+}
+
+bool Executable::execInclude(shared_ptr<Assembler::Line> newLine, string* outIncludedCode)
+{
+	if (this->_elements.size() > 0 and this->_elements.back().get() != nullptr)
+	{
+		boost::filesystem::path pathToFile(newLine->getFilePath());
+		pathToFile.remove_filename();
+		pathToFile.append(newLine->getArgument0().getSymbolName());
+		
+		if (this->_elements.back()->addIncludedFile(pathToFile.string()))
+		{
+			fstream file(pathToFile.c_str(), ios_base::in | ios_base::binary);
+			if (! file)
+			{
+				newLine->printErrorHeader();
+				cerr << "Could not open " << pathToFile << "!" << endl;
+				return false;
+			}
+			
+			char nextChar;
+			while (file.get(nextChar))
+				outIncludedCode->push_back(nextChar);
+			
+			file.close();
+			
+			if (outIncludedCode->back() != 4)
+				outIncludedCode->push_back(4);
+		}
+		// When the file was already included, we will simply ignore it.
+		// This makes programming easier, since you can always list all files
+		// you need without worrying about multiple or circular inclusion.
+	}
+	else
+	{
+		newLine->printErrorHeader();
+		cerr << "Current target node is not specified!" << endl;
+		cerr << "Maybe you forgot to use `NODE`?" << endl;
+		return false;
+	}
+	
 	return true;
 }

@@ -119,7 +119,7 @@ bool Assembler::Line::splitLineInWords()
 		{
 			bracketing = true;
 		}
-		else if (bracketing and c == this->cClosedBracket)
+		if (bracketing and c == this->cClosedBracket)
 		{
 			bracketing = false;
 		}
@@ -317,6 +317,11 @@ bool Assembler::Line::execSpace()
 	this->_argument0 = Argument();
 	this->_argument1 = Argument();
 	this->_memorySize = memory->size();
+	return true;
+}
+
+bool Assembler::Line::execBinary()
+{
 	return true;
 }
 

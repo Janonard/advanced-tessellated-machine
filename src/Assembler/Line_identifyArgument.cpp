@@ -118,7 +118,7 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			return false;
 		}
 	}
-	else if (word[0] == this->cOpenBracket and word[-1] == this->cClosedBracket)
+	else if (word[0] == this->cOpenBracket and word.back() == this->cClosedBracket)
 	{
 		argPtr->setType(ArgumentType::Filename);
 		word.pop_back();

@@ -18,6 +18,7 @@
 #pragma once
 
 #include <vector>
+#include <stack>
 
 #include "System/Node.h"
 #include "Assembler/Line.h"
@@ -56,12 +57,6 @@ public:
 	std::shared_ptr<Assembler::SymbolMap> getSymbols() const
 		{return this->_symbols;};
 		
-	const std::string& getBaseFilePath() const
-		{return this->_baseFilePath;};
-		
-	void setBaseFilePath(std::string baseFilePath)
-		{this->_baseFilePath = baseFilePath;};
-		
 	NODE_INT_TYPE getNewLineLocation() const
 		{return this->_newLineLocation;}
 		
@@ -69,6 +64,14 @@ public:
 		{this->_newLineLocation = newNLL;};
 		
 	bool linkLinesToMemory();
+		
+	const std::string& getCurrentFilePath() const;
+		
+	void setBaseFilePath(std::string baseFilePath);
+	
+	bool addIncludedFile(std::string filePath);
+	
+	bool closeIncludedFile();
 	
 	/*
 	 * Returns a copy of the whole memory.
@@ -124,7 +127,9 @@ private:
 		
 	std::shared_ptr<Assembler::SymbolMap> _symbols;
 		
-	std::string _baseFilePath;
+	std::stack<std::string> _filePathStack;
+	
+	std::vector<std::string> _includedFiles;
 		
 	NODE_INT_TYPE _newLineLocation;
 	

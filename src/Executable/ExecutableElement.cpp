@@ -17,6 +17,7 @@
  */
 #include "Executable/ExecutableElement.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -26,7 +27,8 @@ ExecutableElement::ExecutableElement() :
 	_memory(),
 	_lines(),
 	_symbols(),
-	_baseFilePath(),
+	_filePathStack(),
+	_includedFiles(),
 	_newLineLocation(0)
 {
 	try
@@ -47,6 +49,47 @@ bool ExecutableElement::linkLinesToMemory()
 			return false;
 	}
 	return true;
+}
+
+const std::string & ExecutableElement::getCurrentFilePath() const
+{
+	return this->_filePathStack.top();
+}
+
+void ExecutableElement::setBaseFilePath(std::string baseFilePath)
+{
+	this->_filePathStack = stack<string>();
+	this->_filePathStack.push(baseFilePath);
+	this->_includedFiles = vector<string>();
+	this->_includedFiles.push_back(baseFilePath);
+}
+
+bool ExecutableElement::addIncludedFile(std::string filePath)
+{
+	// That means that the given file is not in _includedFiles and therefore isn't already included.
+	if (find(this->_includedFiles.begin(), this->_includedFiles.end(), filePath) == this->_includedFiles.end())
+	{
+		this->_filePathStack.push(filePath);
+		this->_includedFiles.push_back(filePath);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool ExecutableElement::closeIncludedFile()
+{
+	if (this->_filePathStack.size() > 0)
+	{
+		this->_filePathStack.pop();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void ExecutableElement::setMemory(std::string memoryFileText)
