@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <stack>
 #include <boost/filesystem.hpp>
 
 #include "System/Motherboard.h"
@@ -181,7 +182,8 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 {
 	string text = string(fileText);
 	string currentLine = string();
-	uint currentLineNumber = 1;
+	stack<uint> lineNumberStack = stack<uint>();
+	lineNumberStack.push(1);
 	bool successfull = true;
 	
 	if (text.back() != 4) // 4 is the ASCII character for end-of-file
@@ -192,14 +194,15 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 		if (text[0] == '\n' or text[0] == 4)
 		{
 			string includedCode = string("");
-			if (! this->assembleLine(currentLine, currentLineNumber, &includedCode))
+			if (! this->assembleLine(currentLine, lineNumberStack.top(), &includedCode))
 				successfull = false;
 			if (includedCode.size() > 0)
 			{
 				text = includedCode.append(text);
+				lineNumberStack.push(0);
 			}
 			currentLine = string();
-			currentLineNumber++;
+			lineNumberStack.top()++;
 			
 			if (text[0] == 4)
 			{
@@ -210,6 +213,7 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 					cerr << "than included files!" << endl;
 					throw(LoadingException("Assembly failed"));
 				}
+				lineNumberStack.pop();
 			}
 		}
 		else
