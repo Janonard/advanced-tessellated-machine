@@ -18,6 +18,7 @@
 #include "Assembler/Line.h"
 #include <iostream>
 #include <algorithm>
+#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace Assembler;
@@ -322,6 +323,26 @@ bool Assembler::Line::execSpace()
 
 bool Assembler::Line::execBinary()
 {
+	string pathArg = this->_argument0.getSymbolName();
+	
+	boost::filesystem::path pathToFile(this->getFilePath());
+	pathToFile.remove_filename();
+	pathToFile.append(pathArg);
+	
+	fstream file(pathToFile.c_str(), ios_base::in | ios_base::binary);
+	if (! file)
+	{
+		this->printErrorHeader();
+		cerr << "Could not open " << pathToFile << "!" << endl;
+		return false;
+	}
+	
+	char nextChar;
+	while (file.get(nextChar))
+		this->_argument1.getCodePointer()->push_back(nextChar);
+	
+	file.close();
+	
 	return true;
 }
 
