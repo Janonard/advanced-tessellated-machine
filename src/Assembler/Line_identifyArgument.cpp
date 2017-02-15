@@ -99,7 +99,9 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 		if (iter != this->vAddressRegisters.end())
 		{
 			argPtr->setType(ArgumentType::AddressRegister);
-			memory.push_back(iter - this->vAddressRegisters.begin());
+			// `null` isn't a valid address register, but the register numbers stay the same.
+			// Therefore, we need to add 1 to the result.
+			memory.push_back(iter - this->vAddressRegisters.begin() + 1);
 			this->_memorySize += 1;
 		}
 		else if (word.size() == this->cSixteenBitNumberLength)

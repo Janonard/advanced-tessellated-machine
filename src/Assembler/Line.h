@@ -128,7 +128,7 @@ namespace Assembler
 		
 		const std::array<std::string,4> vRegisters = {{"null","acc","bcc","ccc"}};
 		const std::array<std::string,3> vAddressRegisters = {{"$acc","$bcc","$ccc"}};
-		const std::array<std::string,8> vChannels = {{"up","upRight","right","downRight","down","downLeft","left","upLeft"}};
+		const std::array<std::string,8> vChannels = {{"up","upLeft","left","downLeft","down","downRight","right","upRight"}};
 		const std::array<std::string,34> vCommands = {{"halt", "splash", "move", "move8", "move16", "add", "add8", "add16", "negate", "bit_shift_l", "byte_shift_l", "bit_shift_r", "byte_shift_r", "swap", "compare", "jump", "jump_ops", "jump_opf", "jump_greater", "jump_lower", "jump_equal", "jump_nequal", "branch", "return", "dVerbose", "dSlow", "dCrash", "#define", "#var", "#position", "#space", "#include", "#binary", "NODE"}};
 		
 	};

@@ -127,7 +127,8 @@ bool Assembler::Line::splitLineInWords()
 		
 		if ((not bracketing) and (c == cSpace or c == cTab))
 		{
-			this->_splitLine.push_back(string());
+			if (this->_splitLine.back().size() > 0)
+				this->_splitLine.push_back(string());
 		}
 		else
 		{
@@ -190,6 +191,7 @@ bool Assembler::Line::identifyCommand()
 		{
 			this->printErrorHeader();
 			cerr << "Unknown command!" << endl;
+			cerr << "'" << this->_splitLine[this->_wordOffset] << "'" << endl;
 			return false;
 		}
 	}

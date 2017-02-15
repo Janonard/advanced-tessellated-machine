@@ -48,7 +48,7 @@ bool Assembler::Line::identifyCombination()
 			else
 				COMMAND_COMBI(ArgumentType::Channel,			ArgumentType::Register,			CommandCodes::Move_Channel_Register)
 			else
-				COMMAND_COMBI(ArgumentType::Register,			ArgumentType::Channel,			CommandCodes::Move_Channel_Register)
+				COMMAND_COMBI(ArgumentType::Register,			ArgumentType::Channel,			CommandCodes::Move_Register_Channel)
 			else
 				COMMAND_COMBI(ArgumentType::Register,			ArgumentType::Register,			CommandCodes::Move_Register_Register)
 			else
