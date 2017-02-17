@@ -341,10 +341,15 @@ bool Assembler::Line::execBinary()
 	
 	char nextChar;
 	while (file.get(nextChar))
-		this->_argument1.getCodePointer()->push_back(nextChar);
+	{
+		this->_command.getCodePointer()->push_back(nextChar);
+	}
 	
 	file.close();
 	
+	this->_argument0 = Argument();
+	this->_argument1 = Argument();
+	this->_memorySize = this->_command.getCodePointer()->size();
 	return true;
 }
 

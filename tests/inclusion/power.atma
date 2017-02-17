@@ -16,10 +16,33 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 
-routine:
-move #0F acc
-move #F0 bcc
-add bcc acc
-return
+power:
+	move16 acc power_iBasis
+	move16 bcc power_iExponent
+	move #01 ccc
+	move16 ccc power_iResult
+	
+	power_loop:
+		move16 power_iResult acc
+		move16 power_iBasis bcc
+		
+		branch multiply
+		
+		move16 ccc power_iResult
+		
+		move16 power_iExponent bcc
+		move #FFFF ccc
+		add ccc bcc
+		move16 bcc power_iExponent
+	
+	compare bcc null
+	jump_greater power_loop
+	
+	move16 power_iResult acc
+	return
+	
+power_iBasis: #var #0000
+power_iExponent: #var #0000
+power_iResult: #var #0000
 
-#include <inclusion routine.atma>
+#include <multiply.atma>

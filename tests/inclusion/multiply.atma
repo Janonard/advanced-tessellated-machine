@@ -16,23 +16,22 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 
-NODE #11
-
-move #02 acc
-move #06 bcc
-
-branch power
-
-move16 bin bcc
-
-compare acc bcc
-jump_nequal crash
-
-halt
-
-crash: dCrash
-
-bin: #binary <inclusion/binary.bin>
-
-#include <inclusion/multiply.atma>
-#include <inclusion/power.atma>
+multiply:
+	swap acc
+	move #01 acc
+	negate acc
+	swap acc
+	
+	move null ccc
+	
+	multiply_loop:
+	
+		add acc ccc
+		swap acc
+		add acc bcc
+		swap acc
+		
+	compare bcc null
+	jump_greater multiply_loop
+	
+	return
