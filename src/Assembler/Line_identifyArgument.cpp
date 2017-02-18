@@ -59,9 +59,9 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 	
 	string word = this->_splitLine[this->_wordOffset + argumentNumber + 1];
 	
-	if (word[0] == this->cNumberIdentifier)
+	if (word[0] == this->_resources->cNumberIdentifier)
 	{
-		if (word.back() == this->cNumberIdentifier)
+		if (word.back() == this->_resources->cNumberIdentifier)
 		{
 			argPtr->setType(ArgumentType::SymbolNumber);
 			word = word.substr(1);
@@ -69,7 +69,7 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			argPtr->setSymbolName(word);
 			this->_memorySize += 2;
 		}
-		else if (word.size() == this->cEightBitNumberLength)
+		else if (word.size() == this->_resources->cEightBitNumberLength)
 		{
 			argPtr->setType(ArgumentType::Number8Bit);
 			if (!codeToInt(this,word.substr(1,2),memory))
@@ -77,7 +77,7 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			this->_memorySize += 1;
 			
 		}
-		else if (word.size() == this->cSixteenBitNumberLength)
+		else if (word.size() == this->_resources->cSixteenBitNumberLength)
 		{
 			argPtr->setType(ArgumentType::Number16Bit);
 			if (!codeToInt(this,word.substr(1,2),memory))
@@ -93,18 +93,18 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			return false;
 		}
 	}
-	else if (word[0] == this->cAddressIdentifier)
+	else if (word[0] == this->_resources->cAddressIdentifier)
 	{
-		auto iter = std::find(this->vAddressRegisters.begin(), this->vAddressRegisters.end(), word);
-		if (iter != this->vAddressRegisters.end())
+		auto iter = std::find(this->_resources->vAddressRegisters.begin(), this->_resources->vAddressRegisters.end(), word);
+		if (iter != this->_resources->vAddressRegisters.end())
 		{
 			argPtr->setType(ArgumentType::AddressRegister);
 			// `null` isn't a valid address register, but the register numbers stay the same.
 			// Therefore, we need to add 1 to the result.
-			memory.push_back(iter - this->vAddressRegisters.begin() + 1);
+			memory.push_back(iter - this->_resources->vAddressRegisters.begin() + 1);
 			this->_memorySize += 1;
 		}
-		else if (word.size() == this->cSixteenBitNumberLength)
+		else if (word.size() == this->_resources->cSixteenBitNumberLength)
 		{
 			argPtr->setType(ArgumentType::Address);
 			if (!codeToInt(this,word.substr(1,2),memory))
@@ -120,7 +120,7 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 			return false;
 		}
 	}
-	else if (word[0] == this->cOpenBracket and word.back() == this->cClosedBracket)
+	else if (word[0] == this->_resources->cOpenBracket and word.back() == this->_resources->cClosedBracket)
 	{
 		argPtr->setType(ArgumentType::Filename);
 		word.pop_back();
@@ -129,19 +129,19 @@ bool Assembler::Line::identifyArgument(uint argumentNumber)
 	}
 	else 
 	{
-		auto registerIter = std::find(this->vRegisters.begin(), this->vRegisters.end(), word);
-		auto channelIter = std::find(this->vChannels.begin(), this->vChannels.end(), word);
+		auto registerIter = std::find(this->_resources->vRegisters.begin(), this->_resources->vRegisters.end(), word);
+		auto channelIter = std::find(this->_resources->vChannels.begin(), this->_resources->vChannels.end(), word);
 		
-		if (registerIter != this->vRegisters.end())
+		if (registerIter != this->_resources->vRegisters.end())
 		{
 			argPtr->setType(ArgumentType::Register);
-			memory.push_back(registerIter - this->vRegisters.begin());
+			memory.push_back(registerIter - this->_resources->vRegisters.begin());
 			this->_memorySize += 1;
 		}
-		else if (channelIter != this->vChannels.end())
+		else if (channelIter != this->_resources->vChannels.end())
 		{
 			argPtr->setType(ArgumentType::Channel);
-			memory.push_back(channelIter - this->vChannels.begin());
+			memory.push_back(channelIter - this->_resources->vChannels.begin());
 			this->_memorySize += 1;
 		}
 		else

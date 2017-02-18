@@ -8,4 +8,6 @@ set(ASSEMBLER_SRCS
 	src/Assembler/Line.h
 	src/Assembler/Line_identifyArgument.cpp
 	src/Assembler/Line_identifyCombination.cpp
+	src/Assembler/Resources.h
+	src/Assembler/Resources.cpp
 )

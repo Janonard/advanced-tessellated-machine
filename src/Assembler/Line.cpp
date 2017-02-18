@@ -111,21 +111,21 @@ bool Assembler::Line::splitLineInWords()
 	
 	for (char c : this->_rawLine)
 	{
-		if (c == cComment)
+		if (c == this->_resources->cComment)
 		{
 			break;
 		}
 		
-		if ((not bracketing) and (c == this->cOpenBracket))
+		if ((not bracketing) and (c == this->_resources->cOpenBracket))
 		{
 			bracketing = true;
 		}
-		if (bracketing and c == this->cClosedBracket)
+		if (bracketing and c == this->_resources->cClosedBracket)
 		{
 			bracketing = false;
 		}
 		
-		if ((not bracketing) and (c == cSpace or c == cTab))
+		if ((not bracketing) and (c == this->_resources->cSpace or c == this->_resources->cTab))
 		{
 			if (this->_splitLine.back().size() > 0)
 				this->_splitLine.push_back(string());
@@ -153,7 +153,7 @@ bool Assembler::Line::splitLineInWords()
 
 bool Assembler::Line::identifySymbol()
 {
-	if (this->_splitLine.size() > 0 && this->_splitLine[0].back() == this->cSymbolIdentifier)
+	if (this->_splitLine.size() > 0 && this->_splitLine[0].back() == this->_resources->cSymbolIdentifier)
 	{
 		string symbolName = this->_splitLine[0];
 		symbolName.pop_back();
@@ -181,10 +181,10 @@ bool Assembler::Line::identifyCommand()
 	
 	if (this->_splitLine.size() > this->_wordOffset)
 	{
-		auto iter = find(this->vCommands.begin(), this->vCommands.end(), this->_splitLine[this->_wordOffset]);
-		if (iter != this->vCommands.end())
+		auto iter = find(this->_resources->vCommands.begin(), this->_resources->vCommands.end(), this->_splitLine[this->_wordOffset]);
+		if (iter != this->_resources->vCommands.end())
 		{
-			this->_command.setType(CommandType(iter-this->vCommands.begin()));
+			this->_command.setType(CommandType(iter - this->_resources->vCommands.begin()));
 			return true;
 		}
 		else
@@ -206,42 +206,42 @@ bool Assembler::Line::addSymbol(std::string name, NODE_INT_TYPE location)
 {
 	if (this->_symbols.get() != nullptr)
 	{
-		if (name[0] == this->cNumberIdentifier)
+		if (name[0] == this->_resources->cNumberIdentifier)
 		{
 			this->printErrorHeader();
-			cerr << "A symbol may not start with '" << this->cNumberIdentifier << "'!" << endl;
+			cerr << "A symbol may not start with '" << this->_resources->cNumberIdentifier << "'!" << endl;
 			return false;
 		}
 		
-		if (name[0] == this->cAddressIdentifier)
+		if (name[0] == this->_resources->cAddressIdentifier)
 		{
 			this->printErrorHeader();
-			cerr << "A symbol may not start with '" << this->cAddressIdentifier << "'!" << endl;
+			cerr << "A symbol may not start with '" << this->_resources->cAddressIdentifier << "'!" << endl;
 			return false;
 		}
 		
-		if (name[0] == this->cOpenBracket)
+		if (name[0] == this->_resources->cOpenBracket)
 		{
 			this->printErrorHeader();
-			cerr << "A symbol may not start with '" << this->cOpenBracket << "'!" << endl;
+			cerr << "A symbol may not start with '" << this->_resources->cOpenBracket << "'!" << endl;
 			return false;
 		}
 		
-		if (name[0] == this->cClosedBracket)
+		if (name[0] == this->_resources->cClosedBracket)
 		{
 			this->printErrorHeader();
-			cerr << "A symbol may not start with '" << this->cClosedBracket << "'!" << endl;
+			cerr << "A symbol may not start with '" << this->_resources->cClosedBracket << "'!" << endl;
 			return false;
 		}
 		
-		if (find(this->vRegisters.begin(), this->vRegisters.end(), name) != this->vRegisters.end())
+		if (find(this->_resources->vRegisters.begin(), this->_resources->vRegisters.end(), name) != this->_resources->vRegisters.end())
 		{
 			this->printErrorHeader();
 			cerr << "A symbol may not have the same name as a register!" << endl;
 			return false;
 		}
 		
-		if (find(this->vChannels.begin(), this->vChannels.end(), name) != this->vChannels.end())
+		if (find(this->_resources->vChannels.begin(), this->_resources->vChannels.end(), name) != this->_resources->vChannels.end())
 		{
 			this->printErrorHeader();
 			cerr << "A symbol may not have the same name as a channel!" << endl;
@@ -433,3 +433,12 @@ const Assembler::Command & Assembler::Line::getCommand() const
 	return this->_command;
 }
 
+std::shared_ptr<Resources> Assembler::Line::getResources() const
+{
+	return this->_resources;
+}
+
+void Assembler::Line::setResources(std::shared_ptr<Resources> resources)
+{
+	this->_resources = resources;
+}

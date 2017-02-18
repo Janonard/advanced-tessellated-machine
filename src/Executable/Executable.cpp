@@ -181,10 +181,25 @@ void Executable::saveExecutable() const throw(LoadingException)
 void Executable::assembleFile(const string& fileText) throw(LoadingException)
 {
 	string text = string(fileText);
+	
 	string currentLine = string();
+	
 	stack<uint> lineNumberStack = stack<uint>();
 	lineNumberStack.push(1);
+	
 	bool successfull = true;
+	
+	shared_ptr<Resources> resources;
+	try
+	{
+		resources = make_shared<Resources>();
+	}
+	catch (bad_alloc e)
+	{
+		cerr << "ERROR while assembling!" << endl;
+		cerr << "Could not allocate new memory!" << endl;
+		throw(LoadingException("Assembly failed"));
+	}
 	
 	if (text.back() != 4) // 4 is the ASCII character for end-of-file
 		text.push_back(4);
@@ -194,7 +209,7 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 		if (text[0] == '\n' or text[0] == 4)
 		{
 			string includedCode = string("");
-			if (! this->assembleLine(currentLine, lineNumberStack.top(), &includedCode))
+			if (! this->assembleLine(currentLine, lineNumberStack.top(), resources, &includedCode))
 				successfull = false;
 			if (includedCode.size() > 0)
 			{
@@ -238,7 +253,7 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 	}
 }
 
-bool Executable::assembleLine(const std::string& line, uint lineNumber, string* outIncludedCode)
+bool Executable::assembleLine(const std::string& line, uint lineNumber, shared_ptr<Resources> resources, string* outIncludedCode)
 {
 	shared_ptr<Assembler::Line> newLine(nullptr);
 	try
@@ -254,6 +269,7 @@ bool Executable::assembleLine(const std::string& line, uint lineNumber, string* 
 	
 	newLine->setRawLine(line);
 	newLine->setLineNumber(lineNumber);
+	newLine->setResources(resources);
 	if (this->_elements.size() > 0 and this->_elements.back().get() != nullptr)
 	{
 		newLine->setFilePath(this->_elements.back()->getCurrentFilePath());
