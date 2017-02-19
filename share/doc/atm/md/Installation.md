@@ -30,7 +30,6 @@ Then you use these commands to create a build directory and compile the code:
 	
 Maybe you want to test whether you binaries are okay or not? Use this!
 
-	sudo ../install_shared_files.sh
 	make test
 
 When you want to install the binaries after building, you use:
