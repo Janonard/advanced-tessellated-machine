@@ -23,6 +23,10 @@
 namespace Assembler
 {
 	
+	/*
+	 * Resources is a very central class, since it contains all constants
+	 * used by the assembly process.
+	 */
 	class Resources
 	{
 	public:

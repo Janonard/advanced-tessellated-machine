@@ -23,5 +23,8 @@
 
 namespace Assembler
 {
+	/*
+	 * An abbreviation for this quite bulky map definition.
+	 */
 	typedef std::unordered_map<std::string, NODE_INT_TYPE> SymbolMap;
 }

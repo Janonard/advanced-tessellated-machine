@@ -24,35 +24,81 @@
 
 namespace Assembler
 {
-	
+	/*
+	 * An enum listing all possible types of arguments.
+	 */
 	enum class ArgumentType
 	{
 		NoArgument, Number8Bit, Number16Bit, Register, Symbol, SymbolNumber, Address, AddressRegister, Channel, Filename
 	};
 	
+	/*
+	 * This is a container class for an argument, that contains
+	 * The type, the code and the used symbol.
+	 */
 	class Argument
 	{
 	public: // methods
 		Argument();
 		
+		/*
+		 * If our type is a symbol or a symbol number, this function tries
+		 * to lookup our symbol name in the map. If it finds it, it will set
+		 * our code to the contained value, if not, it throw an out_of_range
+		 * exception.
+		 */
+		void solveSymbols(std::shared_ptr<SymbolMap> symbols) throw(std::out_of_range);
+		
+		/*
+		 * Getter for _type
+		 */
 		ArgumentType getType() const;
+		
+		/*
+		 * Setter for _type
+		 */
 		void setType(ArgumentType type);
 		
+		/*
+		 * Returns a constant reference to _code for read-only access.
+		 */
 		const Memory& getCode() const;
+		
+		/*
+		 * Returns a pointer to _code for read-write access.
+		 */
 		Memory* getCodePointer();
+		
+		/*
+		 * Setter for _code
+		 */
 		void setCode(const Memory& memory);
 		
+		/*
+		 * Returns a constant reference to _symbolName for read-only access.
+		 */
 		const std::string& getSymbolName() const;
-		void setSymbolName(const std::string& symbolName);
 		
-		void solveSymbols(std::shared_ptr<SymbolMap> symbols) throw(std::out_of_range);
+		/*
+		 * Setter for _symbolName
+		 */
+		void setSymbolName(const std::string& symbolName);
 		
 	private: // properties
 		
+		/*
+		 * Our argument type
+		 */
 		ArgumentType _type;
 		
+		/*
+		 * Our code which will end up in the binary representing us.
+		 */
 		Memory _code;
 		
+		/*
+		 * The name of the symbol we are using.
+		 */
 		std::string _symbolName;
 		
 	};

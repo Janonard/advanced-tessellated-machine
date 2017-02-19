@@ -55,6 +55,10 @@ public: // methods
 	 */
 	std::shared_ptr<ExecutableElement> getElement(int x, int y, bool* successfull);
 	
+	/*
+	 * Saves the our elements to the file {_filePath}.atmx
+	 * Throws a LoadingException if it wasn't successfull.
+	 */
 	void saveExecutable() const throw(LoadingException);
 	
 private: // methods
@@ -81,12 +85,32 @@ private: // methods
 	 */
 	void loadExecutable(const std::string& fileText) throw(LoadingException);
 	
+	/*
+	 * Assembles the given fileText and saves the result in _elements.
+	 * If it wasn't successfull, it will write an error log to cerr and throw
+	 * a LodingException.
+	 */
 	void assembleFile(const std::string& fileText) throw(LoadingException);
 	
+	/*
+	 * Assembles a single line. This also requires it's line number and a pointer to
+	 * the Resources object. If new source code were included, it will be written to
+	 * outIncludedLine. Returns true if successfull, false if not. If it isn't
+	 * successfull, it will also write an error log to cerr.
+	 */
 	bool assembleLine(const std::string& line, uint lineNumber, std::shared_ptr<Assembler::Resources> resources, std::string* outIncludedLine);
 	
+	/*
+	 * Adds a new element to _elements, with the given code containing the coordinates.
+	 * Returns true if successfull, false if not. If it isn't successfull, it will
+	 * also write an error log to cerr.
+	 */
 	bool addNewExecElement(uint8_t code);
 	
+	/*
+	 * Executes an inclusion. Returns true if successfull, false if not. If it isn't
+	 * successfull, it will also write an error log to cerr.
+	 */
 	bool execInclude(std::shared_ptr<Assembler::Line> line, std::string* outIncludedCode);
 	
 private: // properties
@@ -96,6 +120,9 @@ private: // properties
 	 */
 	std::vector<std::shared_ptr<ExecutableElement>> _elements;
 	
+	/*
+	 * The path to the file we are working with.
+	 */
 	std::string _filePath;
 	
 };

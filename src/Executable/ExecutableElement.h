@@ -50,27 +50,60 @@ public:
 		{return this->_y;}
 	void setY(int y)
 		{this->_y = y;}
-		
+	
+	/*
+	 * Adds a new line to _lines.
+	 */
 	void addLine(std::shared_ptr<Assembler::Line> newLine)
 		{this->_lines.push_back(newLine);};
 	
+	/*
+	 * Getter for _symbols
+	 */
 	std::shared_ptr<Assembler::SymbolMap> getSymbols() const
 		{return this->_symbols;};
-		
+	
+	/*
+	 * Getter for _newLineLocation.
+	 */
 	NODE_INT_TYPE getNewLineLocation() const
 		{return this->_newLineLocation;}
-		
+	
+	/*
+	 * Setter for _newLineLocation.
+	 */
 	void setNewLineLocation(NODE_INT_TYPE newNLL)
 		{this->_newLineLocation = newNLL;};
-		
+	
+	/*
+	 * Iterates through our _lines, calls their lineLine
+	 * method and adds the result to our memory. Returns true
+	 * if successfull, false if not. If it isn't successfull,
+	 * it will also write an error log to cerr.
+	 */
 	bool linkLinesToMemory();
-		
+	
+	/*
+	 * Returns the current file path, which is the top of
+	 * _filePathStack.
+	 */
 	const std::string& getCurrentFilePath() const;
-		
+	
+	/*
+	 * Clears _filePathStack and _includedFiles and
+	 * pushes baseFilePath to them.
+	 */
 	void setBaseFilePath(std::string baseFilePath);
 	
+	/*
+	 * Adds a new file to the _filePathStack and
+	 * _includedFiles.
+	 */
 	bool addIncludedFile(std::string filePath);
 	
+	/*
+	 * Pops the top of _filePathStack.
+	 */
 	bool closeIncludedFile();
 	
 	/*
@@ -123,14 +156,29 @@ private:
 	 */
 	Memory _memory;
 	
+	/*
+	 * Our lines
+	 */
 	std::vector<std::shared_ptr<Assembler::Line>> _lines;
 		
+	/*
+	 * A shared pointer to the global symbol map.
+	 */
 	std::shared_ptr<Assembler::SymbolMap> _symbols;
-		
+	
+	/*
+	 * A stack containing the currently open files.
+	 */
 	std::stack<std::string> _filePathStack;
 	
+	/*
+	 * A vector containing all included file paths.
+	 */
 	std::vector<std::string> _includedFiles;
-		
+	
+	/*
+	 * The position of the next line.
+	 */
 	NODE_INT_TYPE _newLineLocation;
 	
 };

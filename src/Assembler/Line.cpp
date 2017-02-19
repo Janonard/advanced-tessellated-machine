@@ -29,7 +29,6 @@ Assembler::Line::Line() :
 	_lineNumber(0),
 	_filePath(),
 	_symbols(),
-	_additionalLines(),
 	_memoryLocation(0),
 	_memorySize(0),
 	_wordOffset(0),
@@ -268,6 +267,7 @@ bool Assembler::Line::execDefine()
 		cerr << "Internal Error!" << endl;
 		return false;
 	}
+	
 	NODE_INT_TYPE location = 0;
 	location = this->_argument1.getCode()[0] * 0x100 + this->_argument1.getCode()[1];
 	this->addSymbol(this->_argument0.getSymbolName(), location);
@@ -391,16 +391,6 @@ std::shared_ptr<Assembler::SymbolMap> Assembler::Line::getSymbols() const
 void Assembler::Line::setSymbols(std::shared_ptr<SymbolMap> symbols)
 {
 	this->_symbols = symbols;
-}
-
-vector<shared_ptr<Assembler::Line>> Assembler::Line::getAdditionaLines() const
-{
-	return this->_additionalLines;
-}
-
-void Assembler::Line::clearAdditionalLines()
-{
-	this->_additionalLines = vector<shared_ptr<Assembler::Line>>();
 }
 
 uint16_t Assembler::Line::getMemoryLocation() const
