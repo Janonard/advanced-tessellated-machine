@@ -13,7 +13,7 @@ this into a terminal:
 	
 When you are on Fedora, you use this instead:
 
-	sudo dnf install git cmake clang glfw-devel SOIL-devel libGLEW-devel boost-devel
+	sudo dnf install git cmake clang glfw-devel SOIL-devel glew-devel boost-devel
 
 After you have done this, you should download the source code with this command:
 
