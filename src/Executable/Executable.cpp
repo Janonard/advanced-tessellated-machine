@@ -213,7 +213,13 @@ void Executable::assembleFile(const string& fileText) throw(LoadingException)
 				successfull = false;
 			if (includedCode.size() > 0)
 			{
-				text = includedCode.append(text);
+				// we need a single character infront of the
+				// new code, since the first character of the text
+				// gets removed after one loop. If we wouldn't place
+				// this character, the first of the new text would
+				// be removed.
+				text = " " + includedCode + text;
+				
 				lineNumberStack.push(0);
 			}
 			currentLine = string();
