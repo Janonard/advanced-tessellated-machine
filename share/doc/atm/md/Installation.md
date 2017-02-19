@@ -9,7 +9,7 @@ this sounds harder than it is. All you need is moving around in bash and enterin
 To build the code, you need some software. When you are on Ubuntu, install the software by entering
 this into a terminal:
 
-	sudo apt-get update && sudo apt-get install git cmake clang libgflw-dev libsoil-dev libglew-dev libboost-filesystem-dev
+	sudo apt-get update && sudo apt-get install git cmake clang libgflw3-dev libsoil-dev libglew-dev libboost-filesystem-dev
 	
 When you are on Fedora, you use this instead:
 
