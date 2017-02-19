@@ -25,7 +25,7 @@ Then you use these commands to create a build directory and compile the code:
 	sudo ./install_shared_files.sh
 	mkdir build
 	cd build
-	cmake ..
+	cmake -D CMAKE_BUILD_TYPE=RELEASE ..
 	make
 	
 Maybe you want to test whether you binaries are okay or not? Use this:
