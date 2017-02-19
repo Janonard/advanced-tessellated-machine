@@ -357,7 +357,7 @@ bool Executable::execInclude(shared_ptr<Assembler::Line> newLine, string* outInc
 		pathToFile.remove_filename();
 		pathToFile.append(newLine->getArgument0().getSymbolName());
 		
-		if (this->_elements.back()->addIncludedFile(pathToFile.string()))
+		if (not this->_elements.back()->isFileIncluded(pathToFile.string()))
 		{
 			fstream file(pathToFile.c_str(), ios_base::in | ios_base::binary);
 			if (! file)
@@ -375,6 +375,8 @@ bool Executable::execInclude(shared_ptr<Assembler::Line> newLine, string* outInc
 			
 			if (outIncludedCode->back() != 4)
 				outIncludedCode->push_back(4);
+			
+			this->_elements.back()->addIncludedFile(pathToFile.string());
 		}
 		// When the file was already included, we will simply ignore it.
 		// This makes programming easier, since you can always list all files

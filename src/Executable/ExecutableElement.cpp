@@ -56,6 +56,11 @@ const std::string & ExecutableElement::getCurrentFilePath() const
 	return this->_filePathStack.top();
 }
 
+bool ExecutableElement::isFileIncluded(std::string filePath) const
+{
+	return find(this->_includedFiles.begin(), this->_includedFiles.end(), filePath) != this->_includedFiles.end();
+}
+
 void ExecutableElement::setBaseFilePath(std::string baseFilePath)
 {
 	this->_filePathStack = stack<string>();

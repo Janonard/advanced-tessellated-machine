@@ -90,6 +90,12 @@ public:
 	const std::string& getCurrentFilePath() const;
 	
 	/*
+	 * Returns true if the file witht the given path is
+	 * already included.
+	 */
+	bool isFileIncluded(std::string filePath) const;
+	
+	/*
 	 * Clears _filePathStack and _includedFiles and
 	 * pushes baseFilePath to them.
 	 */
