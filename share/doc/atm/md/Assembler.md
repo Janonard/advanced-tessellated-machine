@@ -7,22 +7,32 @@ An assembly source code is a list of commands which can be directly translated
 to machine code. All [processor commands](ProcessorNode.md) are supported, but
 there are also some additional features.
 
-## The first file
-
-The first file, the one that you are entering as a argument to atm, has one special
-
-It let's you choose for with node you are programming for: When you write `NODE 1 1`,
-all following lines will be executed by the processor at the position `(1|1)`, until
-the file ends or you switch the node again. You have to write `NODE X X` excatly as shown,
-since the executable loader will process it and he's not as a handy person as the assembler
-is.
-
 ## Binary size limit
 
 A binary may not be bigger than 0xFFFF = 65535 Bytes, because everything beyond would be
-unreachable for the processor. The assembler will throw an error when hit this size.
+unreachable for the processor. The assembler will throw an error when it hits this size.
 
 ## Additional features and commands
+
+### Processor selection
+
+The ATM assembler uses one file to generate the code for every processor in the
+system. Therefore, you have do define for which processor you are writing the program.
+
+You do this with the `NODE` command, which takes an `8bitInt` as an argument. Everything
+that follows this command will be assembled for the defined processor, until a new `NODE`
+command appears in the code or the file reaches it's end.
+
+The syntax for the argument is a bit special since every coordinate takes only one half of
+a byte. Let's have some examples:
+
+	; Program the processor at (1|1)
+	NODE #11
+	move #FF acc
+	
+	; Program the processor at (15|0), which does not exist, but it's an example :)
+	NODE #F0
+	move #00 acc
 
 ### symbols
 
@@ -76,13 +86,13 @@ The assembler can include external files via these meta-commands:
 	#include	<filename>
 	#binary		<filename>
 
-You clarify a filename by surrounding the path with `<` and `>`. Including a
+You state a filename by surrounding the path with `<` and `>`. Including a
 file with `#include` leads to it's assembly and inclusion the to final binary,
 while `#binary` simply copies the contents of the file into the binary.
 
 The paths are relative to the including file, therefore when you `#include <routines/foo.atma>`
 in file `/home/bar/test.atma`, the assembler will look for `/home/bar/routines/foo.atma`
-and will cry if it does not find it. Also, when you try to include a file to
+and will cry if it doesn't find it. Also, when you try to include a file to
 an executable twice, nothing will happen. The assembler will simply ignore it.
 Therefore, you can create a file with a subroutine that includes everything
 it needs. If a needed file isn't included, it will be, and if it is, every symbol

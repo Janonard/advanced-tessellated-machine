@@ -20,34 +20,12 @@ Still interested? Well then, just start with it by reading the [docs](share/doc/
 Do you want to start modifying the code to your wishes? You can, since ATM is published under
 the terms of the [GNU Public License](LICENSE).
 
-## Building the code
+## Installation
 
-To build the code, you need some software. Only Linux is supported, Windows not yet
-and Mac propably never will.
+Currently, there are packages available which means that you have to compile the source code on
+your own. But don't worry, it is easier than it sounds. Simply follow [this guide.](share/doc/atm/md/Installation.md)
 
-When you are on Ubuntu, install the software by entering this into a terminal:
+## My blog
 
-	sudo apt-get update && sudo apt-get install git cmake clang libgflw-dev libsoil-dev libglew-dev
-	
-When you are on Fedora, you use this instead:
-
-	sudo dnf install git cmake clang glfw-devel SOIL-devel libGLEW-devel
-
-After you have done this, you should download the source code with this command:
-
-	git clone https://github.com/Janonard/advanced-tesselated-machine.git
-
-Then you use these commands to create a build directory and compile the code:
-
-	cd advanced-tesselated-machine
-	sudo ./install_shared_files.sh
-	mkdir build
-	cd build
-	cmake ..
-	make
-	
-Maybe you want to test whether you binaries are okay or not? Use this:
-
-When you want to install the binaries after building, you use:
-
-	sudo make install
+I have a blog where I write about developing this piece of software, but also about other things.
+[Have a look](https://janonard.tumblr.com), please!
