@@ -17,15 +17,11 @@ master, an old video game design philosophy used since the 1970s.
 
 Still interested? Well then, just start with it by reading the [docs](share/doc/atm/md/README.md)!
 
-Do you want to start modifying the code to your wishes? You can, since ATM is published under
-the terms of the [GNU Public License](LICENSE).
+This piece of software is neither completed nor actively maintained and developed. If you feel
+interested in the project, you can still fork the project and restart the development, but I currently
+feel that this project isn't worth my time.
 
 ## Installation
 
 Currently, there are packages available which means that you have to compile the source code on
 your own. But don't worry, it is easier than it sounds. Simply follow [this guide.](share/doc/atm/md/Installation.md)
-
-## My blog
-
-I have a blog where I write about developing this piece of software, but also about other things.
-[Have a look](https://janonard.tumblr.com), please!
